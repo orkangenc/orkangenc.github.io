@@ -275,7 +275,8 @@ section .container .owl-nav {
 /* ---------------- Site Content ----------------*/
 
 main .site-content {
-    display: flex;
+    display: grid;
+    grid-template-columns: 70% 30%;
 }
 
 main .post-content {
