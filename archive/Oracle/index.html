@@ -48,13 +48,10 @@
                         <a href="../../index.html">Home</a>
                     </li>
                     <li class="nav-link">
-                        <a href="../../index.html/#categories">Categories</a>
-                    </li>
-                    <li class="nav-link">
                         <a href="#">Archive</a>
                     </li>
                     <li class="nav-link">
-                        <a href="../../index.html/#Pages">Pages</a>
+                        <a href="#Pages">Pages</a>
                     </li>
                     <li class="nav-link">
                         <a href="#">Contact Us</a>
@@ -77,12 +74,85 @@
         <section class="container">
             <div class="site-content">
                 <div class="posts">
+
                     <div class="post-title">
-                        <a href="#CTWFDM">Changing TableSpace with fast Data Movement</a>
+                        <a href="#DTCCS">DateTime conversion cheat sheat</a>
+                        <p>Some basic conversion formats for daily usage. Don't forget to add 'from dual' when running the query standalone</div>
+                    <div class="post-body" id="DTCCS">
+                        <p>select convert(char(8),getdate(),108) ==> 09:31:17</p>
+                        <p>select convert(char(10),getdate(),111) ==> 2012/09/13</p>
+                        <p>select convert(char(8),getdate(),112) ==> 20120913</p>
+                        <p>select convert(char(10),getdate(),113) ==> 2012/13/09</p>
+                        <p>select convert(char(10),getdate(),103) ==> 19/10/2012</p>
+                        <p>select convert(char(10),getdate(),105) ==> 19-10-2012</p>
+                    </div>
+                    <hr />
+                    <div class="post-title">
+                        <a href="#CVSEOAT">CSV export of a table</a>
+                        <p>This method may fail if your varchar2 columns contains the seperator, so you may need to select a unique value to replace the example given. You may use a combination of multiple characters.</p>
+                    </div>
+                    <div class="post-body" id="CVSEOAT">
+                        <p>set colsep ";"</p>
+                        <p>set heading off</p>
+                        <p>set linesize 1000</p>
+                        <p>spool employee.csv</p>
+                        <p>select * from employee;</p>
+                        <p>7782;CLARK ;MANAGER ; 10</p>
+                        <p>7839;KING ;PRESIDENT; 11</p>
+                        <p>7934;MILLER ;CLERK ; 15</p>
+                        <p>spool off</p>
+                    </div>
+                    <hr />
+
+                    <div class="post-title">
+                        <a href="#HTGROIO">How to compile invalid Objects with execute immediate</a>
+                        <p>Script to create a script for recompiling invalid objects for a schema. Please note scrip contains double quotes as well as single.</p>
+                    </div>
+                    <div class="post-body" id="HTGROIO">
+                        <p>begin FOR cur IN (SELECT OBJECT_NAME, OBJECT_TYPE, owner FROM all_objects WHERE object_type = :OBJECT_FOLDER_TYPE and owner = :OBJECT_OWNER AND status = 'INVALID' ) LOOP </p>
+                        <p>BEGIN if cur.OBJECT_TYPE = 'PACKAGE BODY' then EXECUTE IMMEDIATE</p>
+                        <p>
+                            'alter ' || cur.OBJECT_TYPE || ' "' || cur.owner || '"."' || cur.OBJECT_NAME || '" compile body'; </p>
+                        <p>else EXECUTE IMMEDIATE 'alter ' || cur.OBJECT_TYPE || ' "' || cur.owner || '"."' || cur.OBJECT_NAME || '" compile'; </p>
+                        <p>end if; EXCEPTION WHEN OTHERS THEN NULL; END; </p>
+                        <p>end loop; end;
+                        </p>
+                    </div>
+                    <hr />
+                    <div class="post-title">
+                        <a href="#HTCASTRASO">How to create a scheduler to recompile all schema objects</a>
+                        <p>Script uses a ready-to-use library available (in general) at /oracle/product/11.2.0.x/db/rdbms/admin/utlrp</p>
+                        <p>Please also note that setting the correct Time-zone is critical, as well as the ordering of the schemas, as there may be dependencies</p>
+                    </div>
+                    <div class="post-body" id="HTCASTRASO ">
+                        <p>BEGIN DBMS_SCHEDULER.CREATE_JOB ( job_name => '"SYS "."RECOMPILE_INVALID "', job_type => 'PLSQL_BLOCK', job_action => </p>
+                        <p>'begin dbms_utility.compile_schema(''SCHEMA1'',FALSE,TRUE); dbms_utility.compile_schema(''SCHEMA2'',FALSE,TRUE); dbms_utility.compile_schema(''SCHEMA3'',FALSE,TRUE); ......... end; ', number_of_arguments => 0,</p>
+                        <p>
+                            start_date => TO_TIMESTAMP_TZ('2014-12-30 20:00:05.000000000 EUROPE/ISTANBUL','YYYY-MM-DD HH24:MI:SS.FF TZR'),</p>
+                        <p>
+                            repeat_interval => 'FREQ=HOURLY;BYDAY=MON,TUE,WED,THU,FRI,SAT,SUN',</p>
+                        <p>
+                            end_date => NULL,</p>
+                        <p>
+                            enabled => FALSE,</p>
+                        <p>
+                            auto_drop => FALSE,</p>
+                        <p>comments => 'Recompiles Invalid Objects in Critical Schemas');</p>
+                        <p>DBMS_SCHEDULER.SET_ATTRIBUTE( </p>
+                        <p>name => '"SYS "."RECOMPILE_INVALID "', </p>
+                        <p>attribute => 'logging_level', value => DBMS_SCHEDULER.LOGGING_OFF);</p>
+                        <p>DBMS_SCHEDULER.enable(</p>
+                        <p>name => '"SYS "."RECOMPILE_INVALID "');</p>
+                        <p>END;</p>
+                    </div>
+                    <hr />
+
+                    <div class="post-title ">
+                        <a href="#CTWFDM ">Changing TableSpace with fast Data Movement</a>
                         <p>Problem definition: You have just discovered that some of the tables in your current schema are located on a different tablespace other than the default tablespace. This can happen due to several scenarios. Please also note this
                             solution requires parallelism.</p>
                     </div>
-                    <div id="CTWFDM">
+                    <div class="post-body" id="CTWFDM ">
                         <p>rename TableName to TableName_old </p>
                         <p>alter session enable parallel dml; </p>
                         <p>insert /*+ append parallel(cxp, number_of_cpus_you_have) nologging */ into YOUR_SCHEMA.TableName cxp(col1,col2,col3,col4,....) select /*+ parallel(ap, number_of_cpus_you_have) */ tcol1,col2,col3,col4,.... from YOUR_SCHEMA.TableName_old
@@ -94,11 +164,12 @@
                     </div>
                     <hr />
 
-                    <div class="post-title">
-                        <a href="#DDRUAF">Delete Duplicate rows using Analytical function</a>
-                    </div>
-                    <div id="DDRUAF">
+                    <div class="post-title ">
+                        <a href="#DDRUAF ">Delete Duplicate rows using Analytical function</a>
                         <p>Please note uniqueness is defined by 5 columns (col1, col2, col3, col4, col5) and parallelism is used</p>
+                    </div>
+                    <div class="post-body" id="DDRUAF ">
+
                         <p>DELETE FROM SCHEMA_NAME.TABLE_NAME </p>
                         <p>WHERE ROWID IN </p>
                         <p>( SELECT rid FROM (SELECT /*+parallel (t,NUMBER_OF_CPU)*/ROWID rid, ROW_NUMBER () OVER (PARTITION BY col1, col2, col3, col4, col5 ORDER BY ROWID) rn </p>
@@ -111,23 +182,23 @@
 
 
 
-                    <div class="post-content" data-aos="zoom-in " data-aos-delay="200 ">
-                        <div class="post-image">
+                    <div class="post-content " data-aos="zoom-in " data-aos-delay="200 ">
+                        <div class="post-image ">
                             <div>
-                                <img src="./assets/Blog-post/blog2.png " class="img" alt="blog1 " />
+                                <img src="./assets/Blog-post/blog2.png " class="img " alt="blog1 " />
                             </div>
-                            <div class="post-info flex-row">
-                                <span><i class="fas fa-user text-gray"></i
+                            <div class="post-info flex-row ">
+                                <span><i class="fas fa-user text-gray "></i
                     >&nbsp;&nbsp;Admin</span
                   >
                   <span
-                    ><i class="fas fa-calendar-alt text-gray"></i
+                    ><i class="fas fa-calendar-alt text-gray "></i
                     >&nbsp;&nbsp;January 16, 2019</span
                   >
                   <span>7 Commets</span>
                             </div>
                         </div>
-                        <div class="post-title">
+                        <div class="post-title ">
                             <a href="# ">Why should boys have all the fun? it's the women who are
                   making india an alcohol-loving contry</a
                 >
@@ -138,34 +209,34 @@
                   voluptate, numquam architecto fugit. Eligendi quidem ipsam
                   ducimus minus magni illum similique veniam tempore unde?
                 </p>
-                <button class="btn post-btn">
-                  Read More &nbsp; <i class="fas fa-arrow-right"></i>
+                <button class="btn post-btn ">
+                  Read More &nbsp; <i class="fas fa-arrow-right "></i>
                 </button>
               </div>
             </div>
             <hr />
-            <div class="post-content" data-aos="zoom-in " data-aos-delay="200 ">
-              <div class="post-image">
+            <div class="post-content " data-aos="zoom-in " data-aos-delay="200 ">
+              <div class="post-image ">
                 <div>
                   <img
                     src="./assets/Blog-post/blog3.png "
-                    class="img"
+                    class="img "
                     alt="blog1 "
                   />
                 </div>
-                <div class="post-info flex-row">
+                <div class="post-info flex-row ">
                   <span
-                    ><i class="fas fa-user text-gray"></i
+                    ><i class="fas fa-user text-gray "></i
                     >&nbsp;&nbsp;Admin</span
                   >
                   <span
-                    ><i class="fas fa-calendar-alt text-gray"></i
+                    ><i class="fas fa-calendar-alt text-gray "></i
                     >&nbsp;&nbsp;January 19, 2019</span
                   >
                   <span>5 Commets</span>
                 </div>
               </div>
-              <div class="post-title">
+              <div class="post-title ">
                 <a href="# "
                   >New data recording system to better analyse road accidents</a
                 >
@@ -176,34 +247,34 @@
                   voluptate, numquam architecto fugit. Eligendi quidem ipsam
                   ducimus minus magni illum similique veniam tempore unde?
                 </p>
-                <button class="btn post-btn">
-                  Read More &nbsp; <i class="fas fa-arrow-right"></i>
+                <button class="btn post-btn ">
+                  Read More &nbsp; <i class="fas fa-arrow-right "></i>
                 </button>
               </div>
             </div>
             <hr />
-            <div class="post-content" data-aos="zoom-in " data-aos-delay="200 ">
-              <div class="post-image">
+            <div class="post-content " data-aos="zoom-in " data-aos-delay="200 ">
+              <div class="post-image ">
                 <div>
                   <img
                     src="./assets/Blog-post/blog4.png "
-                    class="img"
+                    class="img "
                     alt="blog1 "
                   />
                 </div>
-                <div class="post-info flex-row">
+                <div class="post-info flex-row ">
                   <span
-                    ><i class="fas fa-user text-gray"></i
+                    ><i class="fas fa-user text-gray "></i
                     >&nbsp;&nbsp;Admin</span
                   >
                   <span
-                    ><i class="fas fa-calendar-alt text-gray"></i
+                    ><i class="fas fa-calendar-alt text-gray "></i
                     >&nbsp;&nbsp;January 21, 2019</span
                   >
                   <span>12 Commets</span>
                 </div>
               </div>
-              <div class="post-title">
+              <div class="post-title ">
                 <a href="# "
                   >New data recording system to better analyse road accidents</a
                 >
@@ -214,21 +285,21 @@
                   voluptate, numquam architecto fugit. Eligendi quidem ipsam
                   ducimus minus magni illum similique veniam tempore unde?
                 </p>
-                <button class="btn post-btn">
-                  Read More &nbsp; <i class="fas fa-arrow-right"></i>
+                <button class="btn post-btn ">
+                  Read More &nbsp; <i class="fas fa-arrow-right "></i>
                 </button>
               </div>
             </div>
-            <div class="pagination flex-row" id="Pages">
-              <a href="# "><i class="fas fa-chevron-left"></i></a>
-                            <a href="# " class="pages">1</a>
-                            <a href="page-2.html " class="pages">2</a>
-                            <a href="# " class="pages">3</a>
-                            <a href="# "><i class="fas fa-chevron-right"></i></a>
+            <div class="pagination flex-row " id="Pages ">
+              <a href="# "><i class="fas fa-chevron-left "></i></a>
+                            <a href="# " class="pages ">1</a>
+                            <a href="page-2.html " class="pages ">2</a>
+                            <a href="# " class="pages ">3</a>
+                            <a href="# "><i class="fas fa-chevron-right "></i></a>
                         </div>
-                    </div>
 
-                </div>
+
+                    </div>
         </section>
 
         <!-- -----------x---------- Site Content -------------x------------>
@@ -238,55 +309,55 @@
 
     <!-- --------------------------- Footer ---------------------------------------- -->
 
-    <footer class="footer">
-        <div class="container">
-            <div class="about-us" data-aos="fade-right " data-aos-delay="200 ">
+    <footer class="footer ">
+        <div class="container ">
+            <div class="about-us " data-aos="fade-right " data-aos-delay="200 ">
                 <h2>About us</h2>
                 <p>
                     Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusantium quia atque nemo ad modi officiis iure, autem nulla tenetur repellendus.
                 </p>
             </div>
-            <div class="newsletter" data-aos="fade-right " data-aos-delay="200 ">
+            <div class="newsletter " data-aos="fade-right " data-aos-delay="200 ">
                 <h2>Newsletter</h2>
                 <p>Stay update with our latest</p>
-                <div class="form-element">
-                    <input type="text " placeholder="Email " /><span><i class="fas fa-chevron-right"></i
+                <div class="form-element ">
+                    <input type="text " placeholder="Email " /><span><i class="fas fa-chevron-right "></i
             ></span>
                 </div>
             </div>
-            <div class="instagram" data-aos="fade-left " data-aos-delay="200 ">
+            <div class="instagram " data-aos="fade-left " data-aos-delay="200 ">
                 <h2>Instagram</h2>
-                <div class="flex-row">
+                <div class="flex-row ">
                     <img src="./assets/instagram/thumb-card3.png " alt="insta1 " />
                     <img src="./assets/instagram/thumb-card4.png " alt="insta2 " />
                     <img src="./assets/instagram/thumb-card5.png " alt="insta3 " />
                 </div>
-                <div class="flex-row">
+                <div class="flex-row ">
                     <img src="./assets/instagram/thumb-card6.png " alt="insta4 " />
                     <img src="./assets/instagram/thumb-card7.png " alt="insta5 " />
                     <img src="./assets/instagram/thumb-card8.png " alt="insta6 " />
                 </div>
             </div>
-            <div class="follow" data-aos="fade-left " data-aos-delay="200 ">
+            <div class="follow " data-aos="fade-left " data-aos-delay="200 ">
                 <h2>Follow us</h2>
                 <p>Let us be Social</p>
                 <div>
-                    <i class="fab fa-facebook-f"></i>
-                    <i class="fab fa-twitter"></i>
-                    <i class="fab fa-instagram"></i>
-                    <i class="fab fa-youtube"></i>
+                    <i class="fab fa-facebook-f "></i>
+                    <i class="fab fa-twitter "></i>
+                    <i class="fab fa-instagram "></i>
+                    <i class="fab fa-youtube "></i>
                 </div>
             </div>
         </div>
-        <div class="rights flex-row">
-            <h4 class="text-gray">
+        <div class="rights flex-row ">
+            <h4 class="text-gray ">
                 Copyright ©2019 All rights reserved | made by
-                <a href="www.youtube.com/c/dailytuition " target="_black ">Daily Tuition <i class="fab fa-youtube"></i> Channel</a
+                <a href="www.youtube.com/c/dailytuition " target="_black ">Daily Tuition <i class="fab fa-youtube "></i> Channel</a
           >
         </h4>
       </div>
-      <div class="move-up">
-        <span><i class="fas fa-arrow-circle-up fa-2x"></i></span>
+      <div class="move-up ">
+        <span><i class="fas fa-arrow-circle-up fa-2x "></i></span>
       </div>
     </footer>
 
