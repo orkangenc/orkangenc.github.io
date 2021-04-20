@@ -209,13 +209,21 @@ main .site-title .btn:hover {
 
 /* --------------- Blog Carousel ------------ */
 
-main .blog {
-    background: url('../assets/Abract01.png');
-    background-repeat: no-repeat;
-    background-position: right;
+
+/* --------------- Orkan ------------ */
+
+main .sidebar {
     height: 100vh;
-    width: 100%;
-    background-size: 65%;
+    flex: 1;
+}
+
+
+/* --------------- Orkan ------------ */
+
+main .blog {
+    height: 100vh;
+    flex: 4;
+    background-size: 50%;
 }
 
 main .blog .blog-post {
