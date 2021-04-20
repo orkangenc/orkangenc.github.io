@@ -95,7 +95,16 @@
                     <hr />
 
                     <div class="post-title">
-                        <a href="#CTWFDM">Changing TableSpace with fast Data Movement</a>
+                        <a href="#DDRUAF">Delete Duplicate rows using Analytical function</a>
+                    </div>
+                    <div id="DDRUAF">
+                        <p>Please note uniqueness is defined by 5 columns (col1, col2, col3, col4, col5) and parallelism is used</p>
+                        <p>DELETE FROM SCHEMA_NAME.TABLE_NAME </p>
+                        <p>WHERE ROWID IN </p>
+                        <p>( SELECT rid FROM (SELECT /*+parallel (t,NUMBER_OF_CPU)*/ROWID rid, ROW_NUMBER () OVER (PARTITION BY col1, col2, col3, col4, col5 ORDER BY ROWID) rn </p>
+                        <p>FROM SCHEMA_NAME.TABLE_NAME t) WHERE rn
+                            <> 1);</p>
+
                     </div>
                     <hr />
 
