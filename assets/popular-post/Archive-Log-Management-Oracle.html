@@ -23,6 +23,41 @@
     <link rel="shortcut icon" href="../../assets/favicon.png" type="image/png" />
 </head>
 
+<style type="text/css">
+    code {
+        padding: 3px 6px
+    }
+    
+    code,
+    pre {
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+        border-radius: 2px;
+        background: rgba(233, 235, 239, .5);
+    }
+    
+    code:focus,
+    pre:focus {
+        outline: none
+    }
+    
+    pre {
+        overflow: auto;
+        padding: 15px 20px
+    }
+    
+    pre code {
+        padding: 0;
+        background: transparent
+    }
+    
+    .wp-block-code code {
+        white-space: pre-wrap;
+        overflow-wrap: break-word
+    }
+</style>
+
 <body>
 
     <!-- ----------------------------  Navigation ---------------------------------------------- -->
@@ -80,169 +115,162 @@
             <div class="site-content">
 
                 <div class="content-image">
-                    <h2>&nbsp;Archive Log Management</h2>
+                    <u><h2>Archive Log Management</h2></u>
                     <p>Note: It is recommended to perform a backup of the database (after a shutdown normal or immediate) prior to changing the archive status of a database.</p>
                     <p>If you would like to perform these tasks using Database Console see the post Enable/Disable Archive Log Mode 10g/11g using Database Console.</p>
-                    <p>&nbsp;</p>
-                    <h3><strong>Enable Archive Log Mode</strong></h3>
+
+                    <u><h3>Enable Archive Log Mode</h3></u>
                     <p>The following are the steps required to enable archive log mode on an Oracle 10g or 11g database.</p>
                     <p>Verify the database log mode.</p>
-                    <p>&nbsp;</p>
-                    <p>[oracle@ora1 ~]$ sqlplus / as sysdba</p>
-                    <p>SQL*Plus: Release 11.2.0.1.0 Production on Thu Apr 8 12:02:52 2010</p>
-                    <p>Copyright (c) 1982, 2009, Oracle.&nbsp; All rights reserved.</p>
-                    <p>Connected to:</p>
-                    <p>Oracle Database 11g Enterprise Edition Release 11.2.0.1.0 - Production</p>
-                    <p>With the Partitioning, OLAP, Data Mining and Real Application Testing options</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; archive log list</p>
-                    <p>Database log mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Archive Mode</p>
-                    <p>Automatic archival&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Disabled</p>
-                    <p>Archive destination&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; USE_DB_RECOVERY_FILE_DEST</p>
-                    <p>Oldest online log sequence&nbsp;&nbsp;&nbsp;&nbsp; 25</p>
-                    <p>Current log sequence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 27</p>
-                    <p>SQL&gt;</p>
+
+                    <pre class="wp-block-code"><code>[oracle@ora1 ~]$ sqlplus / as sysdba
+SQL*Plus: Release 11.2.0.1.0 Production on Thu Apr 8 12:02:52 2010
+Copyright (c) 1982, 2009, Oracle.&nbsp; All rights reserved.
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.1.0 - Production
+With the Partitioning, OLAP, Data Mining and Real Applicat
+
+SQL> archive log list
+Database log mode No Archive Mode
+Automatic archival Disabled
+Archive destination USE_DB_RECOVERY_FILE_DEST
+Oldest online log sequence 25
+Current log sequence       27
+SQL></code></pre>
                     <p>The log mode is No Archive Mode. Note that Archive destination is USE_DB_RECOVERY_FILE_DEST. You can determine the path by looking at the parameter RECOVERY_FILE_DEST.</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; show parameter recovery_file_dest</p>
-                    <p>&nbsp;</p>
-                    <p>NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        VALUE
-                    </p>
-                    <p>------------------------------------ ----------- ------------------------------</p>
-                    <p>db_recovery_file_dest&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; string&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /u01/app/oracle/flash_recovery</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        _area
-                    </p>
-                    <p>db_recovery_file_dest_size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; big integer 3852M</p>
-                    <p>SQL&gt;</p>
+
+                    <pre class="wp-block-code"><code>SQL> show parameter recovery_file_dest
+NAME                                        TYPE                VALUE    
+------------------------------------        -----------         ------------------------------
+db_recovery_file_dest                       string              /u01/app/oracle/flash_recovery_area    
+db_recovery_file_dest_size                  big integer         3852M
+
+SQL></code></pre>
                     <p>By default, archive logs will be written to the flash recovery area. If you do not want to write archive logs to the flash recovery area you can set the parameter LOG_ARCHIVE_DEST_n to the location in which you wish to write archive
                         logs.
                     </p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter system set log_archive_dest_1='LOCATION=/u02/app/oracle/oradata/orcl/arch' scope = both;</p>
-                    <p>&nbsp;</p>
-                    <p>System altered.</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; archive log list;</p>
-                    <p>Database log mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Archive Mode</p>
-                    <p>Automatic archival&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Disabled</p>
-                    <p>Archive destination&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /u02/app/oracle/oradata/orcl/arch</p>
-                    <p>Oldest online log sequence&nbsp;&nbsp;&nbsp;&nbsp; 25</p>
-                    <p>Current log sequence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 27</p>
-                    <p>SQL&gt;</p>
+
+                    <pre class="wp-block-code"><code>SQL> alter system set log_archive_dest_1='LOCATION=/u02/app/oracle/oradata/orcl/arch' scope = both;
+System altered.
+ 
+SQL> archive log list;
+Database log mode              No Archive Mode
+Automatic archival             Disabled
+Archive destination            /u02/app/oracle/oradata/orcl/arch
+Oldest online log sequence     25
+Current log sequence           27
+
+SQL> </code></pre>
                     <p>Now we shutdown the database and bring it backup in mount mode.</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; shutdown immediate</p>
-                    <p>Database closed.</p>
-                    <p>Database dismounted.</p>
-                    <p>ORACLE instance shut down.</p>
-                    <p>SQL&gt; startup mount</p>
-                    <p>ORACLE instance started.</p>
-                    <p>&nbsp;</p>
-                    <p>Total System Global Area&nbsp; 849530880 bytes</p>
-                    <p>Fixed Size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1339824 bytes</p>
-                    <p>Variable Size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 511708752 bytes</p>
-                    <p>Database Buffers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 331350016 bytes</p>
-                    <p>Redo Buffers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5132288 bytes</p>
-                    <p>Database mounted.</p>
-                    <p>SQL&gt;</p>
+                    <pre class="wp-block-code"><code>SQL> shutdown immediate
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+
+SQL> startup mount
+ORACLE instance started.
+ 
+Total System Global Area  849530880 bytes
+Fixed Size                  1339824 bytes
+Variable Size             511708752 bytes
+Database Buffers          331350016 bytes
+Redo Buffers                5132288 bytes
+Database mounted.
+SQL>
+    </code></pre>
+
+
                     <p>Lastly all that is needed it set archive log mode and open the database.</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter database archivelog;</p>
-                    <p>&nbsp;</p>
-                    <p>Database altered.</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter database open;</p>
-                    <p>&nbsp;</p>
-                    <p>Database altered.</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; archive log list</p>
-                    <p>Database log mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Archive Mode</p>
-                    <p>Automatic archival&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Enabled</p>
-                    <p>Archive destination&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /u02/app/oracle/oradata/orcl/arch</p>
-                    <p>Oldest online log sequence&nbsp;&nbsp;&nbsp;&nbsp; 25</p>
-                    <p>Next log sequence to archive&nbsp;&nbsp; 27</p>
-                    <p>Current log sequence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 27</p>
-                    <p>SQL&gt;</p>
+                    <pre class="wp-block-code"><code>SQL> alter database archivelog;
+Database altered.
+ 
+SQL> alter database open;
+Database altered.
+ 
+SQL> archive log list
+Database log mode              Archive Mode
+Automatic archival             Enabled
+Archive destination            /u02/app/oracle/oradata/orcl/arch
+Oldest online log sequence     25
+Next log sequence to archive   27
+Current log sequence           27
+SQL></code></pre>
+
+
                     <p>We can now see that archive log mode is enabled. Notice that Automatic archive is enabled as well. In Oracle 9i an earlier another parameter needed to be set in order to enable automatic archiving. This in no longer the case in 10g
                         and 11g as automatic archiving is enabled when the database is placed in archive log mode.</p>
-                    <p>&nbsp;</p>
+
                     <p>You can switch to the log file to see that an archive is written to archive log location.</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter system switch logfile;</p>
-                    <p>&nbsp;</p>
-                    <p>System altered.</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; host</p>
-                    <p>[oracle@ora1 ~]$ ls /u02/app/oracle/oradata/orcl/arch</p>
-                    <p>1_27_711369564.dbf</p>
-                    <p>[oracle@ora1 ~]$ exit</p>
-                    <p>exit</p>
-                    <p>&nbsp;&nbsp;</p>
-                    <h3><strong>Disable Archive Log Mode</strong></h3>
+
+                    <pre class="wp-block-code"><code>SQL> alter system switch logfile;
+System altered.
+ 
+SQL> host 
+[oracle@ora1 ~]$ ls /u02/app/oracle/oradata/orcl/arch1_27_711369564.dbf
+[oracle@ora1 ~]$ exit</code></pre>
+
+
+                    <h3><u>Disable Archive Log Mode</u></h3>
                     <p>Note: It is recommended to perform a backup of the database (after a shutdown normal or immediate) prior to changing the archive status of a database.</p>
-                    <p>&nbsp;</p>
+
                     <p>The following are the steps required to disable archive log mode on an Oracle 10g or 11g database.</p>
-                    <p>&nbsp;</p>
+
                     <p>Verify the database log mode.</p>
-                    <p>&nbsp;</p>
-                    <p>[oracle@ora1 ~]$ sqlplus / as sysdba</p>
-                    <p>&nbsp;</p>
-                    <p>SQL*Plus: Release 11.2.0.1.0 Production on Thu Apr 8 12:54:05 2010</p>
-                    <p>&nbsp;</p>
-                    <p>Copyright (c) 1982, 2009, Oracle.&nbsp; All rights reserved.</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>Connected to:</p>
-                    <p>Oracle Database 11g Enterprise Edition Release 11.2.0.1.0 - Production</p>
-                    <p>With the Partitioning, OLAP, Data Mining and Real Application Testing options</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; archive log list;</p>
-                    <p>Database log mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Archive Mode</p>
-                    <p>Automatic archival&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Enabled</p>
-                    <p>Archive destination&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /u02/app/oracle/oradata/orcl/arch</p>
-                    <p>Oldest online log sequence&nbsp;&nbsp;&nbsp;&nbsp; 26</p>
-                    <p>Next log sequence to archive&nbsp;&nbsp; 28</p>
-                    <p>Current log sequence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 28</p>
-                    <p>SQL&gt;</p>
+
+                    <pre class="wp-block-code"><code>[oracle@ora1 ~]$ sqlplus / as sysdba
+SQL*Plus: Release 11.2.0.1.0 Production on Thu Apr 8 12:54:05 2010
+ 
+Copyright (c) 1982, 2009, Oracle.  All rights reserved.
+ 
+ 
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.1.0 - Production
+With the Partitioning, OLAP, Data Mining and Real Application Testing options
+ 
+SQL> archive log list;
+Database log mode              Archive Mode
+Automatic archival             Enabled
+Archive destination            /u02/app/oracle/oradata/orcl/arch
+Oldest online log sequence     26
+Next log sequence to archive   28
+Current log sequence           28
+SQL>
+</code></pre>
+
+
                     <p>The Database log mode is Archive mode. Next we shut down the database and bring up back up in mount mode.</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; shutdown immediate</p>
-                    <p>Database closed.</p>
-                    <p>Database dismounted.</p>
-                    <p>ORACLE instance shut down.</p>
-                    <p>SQL&gt; startup mount</p>
-                    <p>ORACLE instance started.</p>
-                    <p>&nbsp;</p>
-                    <p>Total System Global Area&nbsp; 849530880 bytes</p>
-                    <p>Fixed Size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1339824 bytes</p>
-                    <p>Variable Size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 511708752 bytes</p>
-                    <p>Database Buffers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 331350016 bytes</p>
-                    <p>Redo Buffers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5132288 bytes</p>
-                    <p>Database mounted.</p>
-                    <p>SQL&gt;</p>
+
+                    <pre class="wp-block-code"><code>SQL> shutdown immediate
+Database closed.
+Database dismounted.
+ORACLE instance shut down.
+
+SQL> startup mount
+ORACLE instance started.
+ 
+Total System Global Area  849530880 bytes
+Fixed Size                  1339824 bytes
+Variable Size             511708752 bytes
+Database Buffers          331350016 bytes
+Redo Buffers                5132288 bytes
+Database mounted.
+SQL></code></pre>
+
                     <p>All that is left is to disable archive log mode and open the database.</p>
-                    <p>&nbsp;</p>
-                    <p><br /> SQL&gt; alter database noarchivelog;</p>
-                    <p>&nbsp;</p>
-                    <p>Database altered.</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter database open;</p>
-                    <p>&nbsp;</p>
-                    <p>Database altered.</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; archive log list;</p>
-                    <p>Database log mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Archive Mode</p>
-                    <p>Automatic archival&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Disabled</p>
-                    <p>Archive destination&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /u02/app/oracle/oradata/orcl/arch</p>
-                    <p>Oldest online log sequence&nbsp;&nbsp;&nbsp;&nbsp; 26</p>
-                    <p>Current log sequence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 28</p>
-                    <p>SQL&gt;</p>
+                    <pre class="wp-block-code"><code>SQL> alter database noarchivelog;
+Database altered.
+ 
+SQL> alter database open;
+Database altered.
+ 
+SQL> archive log list;
+Database log mode              No Archive Mode
+Automatic archival             Disabled
+Archive destination            /u02/app/oracle/oradata/orcl/arch
+Oldest online log sequence     26
+Current log sequence           28
+SQL>
+</code></pre>
                 </div>
             </div>
         </section>

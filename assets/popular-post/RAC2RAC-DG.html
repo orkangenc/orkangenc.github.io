@@ -23,6 +23,46 @@
     <link rel="shortcut icon" href="../../assets/favicon.png" type="image/png" />
 </head>
 
+<style type="text/css">
+    code {
+        padding: 3px 6px
+    }
+    
+    .pi {
+        font-weight: bold;
+        color: black;
+    }
+    
+    code,
+    pre {
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+        border-radius: 2px;
+        background: rgba(233, 235, 239, .5);
+    }
+    
+    code:focus,
+    pre:focus {
+        outline: none
+    }
+    
+    pre {
+        overflow: auto;
+        padding: 15px 20px
+    }
+    
+    pre code {
+        padding: 0;
+        background: transparent
+    }
+    
+    .wp-block-code code {
+        white-space: pre-wrap;
+        overflow-wrap: break-word
+    }
+</style>
+
 <body>
 
     <!-- ----------------------------  Navigation ---------------------------------------------- -->
@@ -65,6 +105,7 @@
                 <a href=""><i class="fab fa-youtube"></i></a>
             </div>
         </div>
+
     </nav>
 
     <!-- ------------x---------------  Navigation --------------------------x------------------- -->
@@ -91,8 +132,8 @@
 
                 <!-- #######  THIS IS A COMMENT - Visible only in the source editor #########-->
                 <div class="news-content news-post-main-content">
-                    <h2><strong>11gR2 RAC to RAC Data Guard Configuration</strong></h2>
-                    <p>&nbsp;</p>
+                    <h2><u>11gR2 RAC to RAC Data Guard Configuration</u></h2>
+
                     <p>The initial setup is not much different between RAC-RAC and RAC-Single instance data guard, in a way setting up the data guard is same with some additional setps at the end of setup in the way of bringing the</p>
                     <p>Standby database under the control of clusterware. The primary RAC environment consists of two nodes, hostname orcliprd1 and orcliprd2. The primary database name is optimus and two instances</p>
                     <p>are optimus1 (running on orcliprd1 node) and optimus2 (on orcliprd2).</p>
@@ -118,454 +159,436 @@
                         replaced with an uncorrupted copy of that block from a physical standby database that is operating in real-time query mode. A</p>
                     <p>corrupted block in a physical standby database can also be automatically replaced with an uncorrupted copy of the block from the primary database.</p>
                     <p>&nbsp;</p>
-                    <ol>
-                        <li>On the standby ASM instances would have been created when grid infrastructure was installed but not the ASM diskgroups. Using asmca create diskgroup on the standby ASM instances. In this case both</li>
-                    </ol>
-                    <p>primary and standby ASM diskgroups are named +DATA and +FRA</p>
+                    <pi>
+                        1. On the standby ASM instances would have been created when grid infrastructure was installed but not the ASM diskgroups. Using asmca create diskgroup on the standby ASM instances. In this case both primary and standby ASM diskgroups are named +DATA
+                        and +FRA
+                    </pi>
+                    <p></p>
+                    <pi>
+                        2. Create following directory structures in all standby nodes
+                    </pi>
+                    <pre class="wp-block-code"><code>
+$ cd $ORACLE_BASE
+$ mkdir admin
+$ cd admin/
+$ mkdir prime
+$ cd prime/
+$ mkdir adump dpdump hdump pfile</code></pre>
                     <p>&nbsp;</p>
-                    <ol start="2">
-                        <li>Create following directory structures in all standby nodes</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>cd $ORACLE_BASE</p>
-                    <p>mkdir admin</p>
-                    <p>cd admin/</p>
-                    <p>mkdir prime</p>
-                    <p>cd prime/</p>
-                    <p>mkdir adump &nbsp;dpdump &nbsp;hdump &nbsp;pfile</p>
-                    <p>&nbsp;</p>
-                    <ol start="3">
-                        <li>It is assumed primary db is in archivelog mode if not put the db in archive log mode. This is required since duplication is done using active database.</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <ol start="4">
-                        <li>Enable force logging on the primary database</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>alter database force logging;</p>
-                    <p>&nbsp;</p>
-                    <p>5.Create standby log files for each thread on primary db. These should be same size as the online redo log files</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter database add standby logfile thread 1 size 52428800;</p>
-                    <p>&nbsp;</p>
+
+                    <pi>3. It is assumed primary db is in archivelog mode if not put the db in archive log mode. This is required since duplication is done using active database.</pi>
+                    <p></p>
+                    <pi>4. Enable force logging on the primary database</pi>
+                    <pre class="wp-block-code"><code>SQL> alter database force logging;</code></pre>
+                    <p></p>
+                    <pi>5. Create standby log files for each thread on primary db. These should be same size as the online redo log files</pi>
+                    <p></p>
+                    <pre class="wp-block-code"><code>SQL> alter database add standby logfile thread 1 size 52428800;</code></pre>
                     <p>or</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter database add standby logfile thread 1;</p>
-                    <p>SQL&gt; alter database add standby logfile thread 2;</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>SQL> alter database add standby logfile thread 1;
+SQL> alter database add standby logfile thread 2;
+                    </code></pre>
+
                     <p>There should be at least one more redo log group per thread than the online redo logs.</p>
-                    <p>&nbsp;</p>
-                    <ol start="6">
-                        <li>Both on primary and standby add static listener entries in $GRID_HOME($CRS_HOME)/network/admin/listener.ora. If scan listener is used for connections create static listener for those as well. One key</li>
-                    </ol>
-                    <p>difference is both in 10gR2 and 11gR1 the static listener and default listeners have hostname appended to the end but on 11gR2 this is not the case. Find out the available listeners with</p>
-                    <p>&nbsp;</p>
-                    <p>srvctl config listener</p>
-                    <p>Name: LISTENER</p>
-                    <p>Network: 1, Owner: oracle</p>
-                    <p>Home:</p>
-                    <p>End points: TCP:3000</p>
-                    <p>&nbsp;</p>
-                    <p>srvctl config scan_listener</p>
-                    <p>SCAN Listener LISTENER_SCAN1 exists. Port: TCP:3000</p>
-                    <p>&nbsp;</p>
+                    <p></p>
+
+                    <pi>6. On both primary and standby add static listener entries in $GRID_HOME($CRS_HOME)/network/admin/listener.ora. If scan listener is used for connections create static listener for those as well. </pi>
+                    <p>One key difference is both in 10gR2 and 11gR1 the static listener and default listeners have hostname appended to the end but on 11gR2 this is not the case. Find out the available listeners with</p>
+                    <pre class="wp-block-code"><code>
+$ srvctl config listener
+Name: LISTENER
+Network: 1, Owner: oracle
+Home:
+End points: TCP:3000
+
+$ srvctl config scan_listener
+SCAN Listener LISTENER_SCAN1 exists. Port: TCP:3000
+</code></pre>
+
                     <p>and create the static listeners for default listener as well as the scan listener. For standby on orclis1</p>
-                    <p>&nbsp;</p>
-                    <p>more listener.ora</p>
-                    <p>LISTENER=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER))))</p>
-                    <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>LISTENER_SCAN1=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER_SCAN1))))</p>
-                    <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER_SCAN1=ON &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line</p>
-                    <p>added by Agent</p>
-                    <p>ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER=ON &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SID_LIST_LISTENER =</p>
-                    <p>&nbsp; (SID_LIST =</p>
-                    <p>&nbsp;&nbsp;&nbsp; (SID_DESC =</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (GLOBAL_DBNAME = prime)</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (SID_NAME = prime1)</p>
-                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (ORACLE_HOME = /oracle/product/11.2.0.3/db)</p>
-                    <p>&nbsp;&nbsp;&nbsp; )</p>
-                    <p>&nbsp; )</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SID_LIST_LISTENER_SCAN1 =</p>
-                    <p>(SID_LIST =</p>
-                    <p>(SID_DESC =</p>
-                    <p>(GLOBAL_DBNAME = prime)</p>
-                    <p>(SID_NAME = prime1)</p>
-                    <p>(ORACLE_HOME = /oracle/product/11.2.0.3/db)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>on orclis2</p>
-                    <p>&nbsp;</p>
-                    <p>more listener.ora</p>
-                    <p>LISTENER_SCAN1=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER_SCAN1))))</p>
-                    <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>LISTENER=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER))))</p>
-                    <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER=ON &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER_SCAN1=ON &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line</p>
-                    <p>added by Agent</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SID_LIST_LISTENER =</p>
-                    <p>(SID_LIST =</p>
-                    <p>(SID_DESC =</p>
-                    <p>(GLOBAL_DBNAME = prime)</p>
-                    <p>(SID_NAME = prime2)</p>
-                    <p>(ORACLE_HOME = /oracle/product/11.2.0.3/db)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>SID_LIST_LISTENER_SCAN1 =</p>
-                    <p>(SID_LIST =</p>
-                    <p>(SID_DESC =</p>
-                    <p>(GLOBAL_DBNAME = prime)</p>
-                    <p>(SID_NAME = prime2)</p>
-                    <p>(ORACLE_HOME = /oracle/product/11.2.0.3/db)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>
+$ more listener.ora
+LISTENER=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER))))
+# line added by Agent
+LISTENER_SCAN1=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER_SCAN1))))
+# line added by Agent
+ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER_SCAN1=ON
+# line added by Agent
+ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER=ON 
+# line added by Agent
+
+SID_LIST_LISTENER =
+ (SID_LIST =
+   (SID_DESC =
+     (GLOBAL_DBNAME = prime)
+     (SID_NAME = prime1)
+     (ORACLE_HOME = /oracle/product/11.2.0.3/db)
+   )
+ )
+
+SID_LIST_LISTENER_SCAN1 =
+ (SID_LIST =
+   (SID_DESC =
+   (GLOBAL_DBNAME = prime)
+   (SID_NAME = prime1)
+   (ORACLE_HOME = /oracle/product/11.2.0.3/db)
+   )
+ )
+
+on orclis2
+
+$ more listener.ora
+LISTENER_SCAN1=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER_SCAN1))))
+# line added by Agent
+LISTENER=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER))))
+# line added by Agent
+ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER=ON 
+# line added by Agent
+ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER_SCAN1=ON 
+# line added by Agent
+
+SID_LIST_LISTENER =
+(SID_LIST =
+(SID_DESC =
+(GLOBAL_DBNAME = prime)
+(SID_NAME = prime2)
+(ORACLE_HOME = /oracle/product/11.2.0.3/db)
+)
+)
+
+SID_LIST_LISTENER_SCAN1 =
+(SID_LIST =
+(SID_DESC =
+(GLOBAL_DBNAME = prime)
+(SID_NAME = prime2)
+(ORACLE_HOME = /oracle/product/11.2.0.3/db)
+)
+</code></pre>
                     <p>In 11gR2 there's another file in $ORACLE_HOME/network/admin folder called endpoints_listener.ora. This is there for backward compatibility with pre-11.2 databases. More on metalink note 11.2 Scan and Node TNS Listener Setup Examples
                         [ID 1070607.1] Stop and start the listeners on standby</p>
-                    <p>&nbsp;</p>
-                    <p>srvctl stop listener -n hostname</p>
-                    <p>srvctl start listener -n hostname</p>
-                    <p>&nbsp;</p>
-                    <p>srvctl stop scan_listener</p>
-                    <p>srvctl start scan_listener</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>
+$ srvctl stop listener -n hostname
+$ srvctl start listener -n hostname
+
+$ srvctl stop scan_listener
+$ srvctl start scan_listener
+
+</code></pre>
                     <p>After this stop and start of listeners doing a listener status listener would show the statically registered instance and service as below</p>
-                    <p>&nbsp;</p>
-                    <p>Service "prime" has 1 instance(s).</p>
-                    <p>Instance "prime1", status UNKNOWN, has 1 handler(s) for this service...</p>
-                    <p>The command completed successfully</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>
+Service "prime" has 1 instance(s).
+Instance "prime1", status UNKNOWN, has 1 handler(s) for this service...
+The command completed successfully
+</code></pre>
                     <p>Do the same for primary environment on orcliprd1</p>
-                    <p>&nbsp;</p>
-                    <p>more listener.ora</p>
-                    <p>LISTENER=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER))))</p>
-                    <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>LISTENER_SCAN1=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER_SCAN1))))</p>
-                    <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER_SCAN1=ON &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER=ON &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SID_LIST_LISTENER =</p>
-                    <p>(SID_LIST =</p>
-                    <p>(SID_DESC =</p>
-                    <p>(GLOBAL_DBNAME = optimus)</p>
-                    <p>(SID_NAME = optimus1)</p>
-                    <p>(ORACLE_HOME = /oracle/product/11.2.0.3/db)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SID_LIST_LISTENER_SCAN1 =</p>
-                    <p>(SID_LIST =</p>
-                    <p>(SID_DESC =</p>
-                    <p>(GLOBAL_DBNAME = optimus)</p>
-                    <p>(SID_NAME = optimus1)</p>
-                    <p>(ORACLE_HOME = /oracle/product/11.2.0.3/db)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>on orcliprd2</p>
-                    <p>&nbsp;</p>
-                    <p>more listener.ora</p>
-                    <p>LISTENER_SCAN1=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER_SCAN1))))&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>LISTENER=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER))))&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER=ON &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER_SCAN1=ON &nbsp; &nbsp; &nbsp; &nbsp;# line added by Agent</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SID_LIST_LISTENER =</p>
-                    <p>(SID_LIST =</p>
-                    <p>(SID_DESC =</p>
-                    <p>(GLOBAL_DBNAME = optimus)</p>
-                    <p>(SID_NAME = optimus2)</p>
-                    <p>(ORACLE_HOME = /oracle/product/11.2.0.3/db)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>SID_LIST_LISTENER_SCAN1 =</p>
-                    <p>(SID_LIST =</p>
-                    <p>(SID_DESC =</p>
-                    <p>(GLOBAL_DBNAME = optimus)</p>
-                    <p>(SID_NAME = optimus2)</p>
-                    <p>(ORACLE_HOME = /oracle/product/11.2.0.3/db)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <ol start="7">
-                        <li>Create TNS entries on both primary and standby. On all primary node's $ORACLE_HOME/network/admin</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>PRIMESCAN =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = prime-scan)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = prime)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>PRIME =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = prime1-vip)(PORT = 3000))</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = prime2-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = prime)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>PRIME1 =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = prime1-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = prime)</p>
-                    <p>(INSTANCE_NAME = prime1)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>PRIME2 =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = prime2-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = prime)</p>
-                    <p>(INSTANCE_NAME = prime2)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>OPTIMUS =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = optimus1-vip)(PORT = 3000))</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = optimus2-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = optimus)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>OPTIMUS1 =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = optimus1-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = optimus)</p>
-                    <p>(INSTANCE_NAME = optimus1)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>OPTIMUS2 =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = optimus2-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = optimus)</p>
-                    <p>(INSTANCE_NAME = optimus2)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>
+$ more listener.ora
+LISTENER=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER))))
+# line added by Agent
+LISTENER_SCAN1=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER_SCAN1))))
+# line added by Agent
+ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER_SCAN1=ON 
+# line added by Agent
+ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER=ON 
+# line added by Agent
+
+SID_LIST_LISTENER =
+(SID_LIST =
+(SID_DESC =
+(GLOBAL_DBNAME = optimus)
+(SID_NAME = optimus1)
+(ORACLE_HOME = /oracle/product/11.2.0.3/db)
+)
+)
+
+SID_LIST_LISTENER_SCAN1 =
+(SID_LIST =
+(SID_DESC =
+(GLOBAL_DBNAME = optimus)
+(SID_NAME = optimus1)
+(ORACLE_HOME = /oracle/product/11.2.0.3/db)
+)
+)
+
+on orcliprd2
+
+$ more listener.ora
+LISTENER_SCAN1=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER_SCAN1))))
+# line added by Agent
+LISTENER=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=IPC)(KEY=LISTENER))))
+# line added by Agent
+ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER=ON 
+# line added by Agent
+ENABLE_GLOBAL_DYNAMIC_ENDPOINT_LISTENER_SCAN1=ON 
+# line added by Agent
+
+SID_LIST_LISTENER =
+(SID_LIST =
+(SID_DESC =
+(GLOBAL_DBNAME = optimus)
+(SID_NAME = optimus2)
+(ORACLE_HOME = /oracle/product/11.2.0.3/db)
+)
+)
+
+SID_LIST_LISTENER_SCAN1 =
+(SID_LIST =
+(SID_DESC =
+(GLOBAL_DBNAME = optimus)
+(SID_NAME = optimus2)
+(ORACLE_HOME = /oracle/product/11.2.0.3/db)
+)
+)</code></pre>
+
+
+                    <pi>7. Create TNS entries on both primary and standby. On all primary node's $ORACLE_HOME/network/admin</pi>
+                    <pre class="wp-block-code"><code>
+
+PRIMESCAN =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = prime-scan)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = prime)
+)
+)
+
+PRIME =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = prime1-vip)(PORT = 3000))
+(ADDRESS = (PROTOCOL = TCP)(HOST = prime2-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = prime)
+)
+)
+
+PRIME1 =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = prime1-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = prime)
+(INSTANCE_NAME = prime1)
+)
+)
+
+PRIME2 =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = prime2-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = prime)
+(INSTANCE_NAME = prime2)
+)
+)
+
+OPTIMUS =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = optimus1-vip)(PORT = 3000))
+(ADDRESS = (PROTOCOL = TCP)(HOST = optimus2-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = optimus)
+)
+)
+
+OPTIMUS1 =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = optimus1-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = optimus)
+(INSTANCE_NAME = optimus1)
+)
+)
+
+OPTIMUS2 =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = optimus2-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = optimus)
+(INSTANCE_NAME = optimus2)
+)
+)
+</code></pre>
                     <p>On all standby node's $ORACLE_HOME/network/admin</p>
-                    <p>&nbsp;</p>
-                    <p>OPTIMUSSCAN =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = rac-scan)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = optimus)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>OPTIMUS =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = optimus1-vip)(PORT = 3000))</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = optimus2-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = optimus)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>OPTIMUS1 =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = optimus1-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = optimus)</p>
-                    <p>(INSTANCE_NAME = optimus1)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>OPTIMUS2 =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = optimus2-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = optimus)</p>
-                    <p>(INSTANCE_NAME = optimus2)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>PRIME =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = prime1-vip)(PORT = 3000))</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = prime2-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = prime)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>PRIME1 =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = prime1-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = prime)</p>
-                    <p>(INSTANCE_NAME = prime1)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>PRIME2 =</p>
-                    <p>(DESCRIPTION =</p>
-                    <p>(ADDRESS = (PROTOCOL = TCP)(HOST = prime2-vip)(PORT = 3000))</p>
-                    <p>(CONNECT_DATA =</p>
-                    <p>(SERVER = DEDICATED)</p>
-                    <p>(SERVICE_NAME = prime)</p>
-                    <p>(INSTANCE_NAME = prime2)</p>
-                    <p>)</p>
-                    <p>)</p>
-                    <p>&nbsp;</p>
-                    <ol start="8">
-                        <li>Before modifying initialization parameters create a pfile from the spfile on the primary db SQL&gt;create pfile='/home/oracle/optimusinitpfile.ora' from spfile.</li>
-                    </ol>
-                    <p>-- Eğer hazır durumda &ccedil;alışan bir database &uuml;zerine duplicate yapılacak ise bu veri tabanının kendi pfile dosyası daha sonra kullanılmak &uuml;zere yedeklenebilir.</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; create pfile='/home/oracle/pfileDir/primeinitpfile' from spfile;</p>
-                    <p>&nbsp; create pfile='/home/oracle/pfileDir/admracinitpfile' from spfile;</p>
-                    <p>&nbsp;</p>
-                    <ol start="9">
-                        <li>Modify the initialization parameters on the primary db. Remote archive dest state is set to defer, enable it before running the standby duplication. LGWR with ASYNC and NOAFFIRM is used as the redo</li>
-                    </ol>
+                    <pre class="wp-block-code"><code>
+OPTIMUSSCAN =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = rac-scan)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = optimus)
+)
+)
+&nbsp;
+OPTIMUS =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = optimus1-vip)(PORT = 3000))
+(ADDRESS = (PROTOCOL = TCP)(HOST = optimus2-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = optimus)
+)
+)
+&nbsp;
+OPTIMUS1 =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = optimus1-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = optimus)
+(INSTANCE_NAME = optimus1)
+)
+)
+&nbsp;
+&nbsp;
+OPTIMUS2 =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = optimus2-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = optimus)
+(INSTANCE_NAME = optimus2)
+)
+)
+&nbsp;
+PRIME =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = prime1-vip)(PORT = 3000))
+(ADDRESS = (PROTOCOL = TCP)(HOST = prime2-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = prime)
+)
+)
+&nbsp;
+PRIME1 =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = prime1-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = prime)
+(INSTANCE_NAME = prime1)
+)
+)
+&nbsp;
+&nbsp;
+PRIME2 =
+(DESCRIPTION =
+(ADDRESS = (PROTOCOL = TCP)(HOST = prime2-vip)(PORT = 3000))
+(CONNECT_DATA =
+(SERVER = DEDICATED)
+(SERVICE_NAME = prime)
+(INSTANCE_NAME = prime2)
+)
+)
+</code></pre>
+
+                    <pi>8. Before modifying initialization parameters create a pfile from the spfile on the primary db </pi>
+                    <pre class="wp-block-code"><code>SQL> create pfile='/home/oracle/optimusinitpfile.ora' from spfile;</code></pre>
+                    <p>If you are planning to duplicate over an existing (working) instance you can use the same pfile</p>
+                    <pre class="wp-block-code"><code>SQL> create pfile='/home/oracle/pfileDir/admracinitpfile' from spfile;</code></pre>
+
+
+                    <pi>9. Modify the initialization parameters on the primary db. Remote archive dest state is set to defer, enable it before running the standby duplication. LGWR with ASYNC and NOAFFIRM is used as the redo</pi>
+
                     <p>transport this could be changed to suite the protection mode. Also FAL_CLIENT parameter has been set to each instance. This could be set to OPTIMUS TNS entry which has all entries.</p>
-                    <p>&nbsp;</p>
-                    <p>alter system set log_archive_max_processes=6 scope=both;</p>
-                    <p>alter system set DB_FILE_NAME_CONVERT='+DATASSD/prime','+DATASSD/optimus','+DATASAS/prime','+DATASAS/optimus' scope=spfile;</p>
-                    <p>alter system set log_FILE_NAME_CONVERT='+FRA/prime','+FRA/optimus','+DATASSD/prime','+DATASSD/optimus','+DATASAS/prime','+DATASAS/optimus' scope=spfile;</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>SQL> create pfile='/home/oracle/optimusinitpfile.ora' from spfile;
+alter system set log_archive_max_processes=6 scope=both;
+alter system set DB_FILE_NAME_CONVERT='+DATASSD/prime','+DATASSD/optimus','+DATASAS/prime','+DATASAS/optimus' scope=spfile;
+alter system set log_FILE_NAME_CONVERT='+FRA/prime','+FRA/optimus','+DATASSD/prime','+DATASSD/optimus','+DATASAS/prime','+DATASAS/optimus' scope=spfile;</code></pre>
+
                     <p>To make these changes take effect it requires a database restart not an instance restart this is due to the fact that filename convert parameter must be same on all nodes. If an instance restart is done it will fail with the following
                         error on alert log</p>
-                    <p>&nbsp;</p>
-                    <p>NOTE: Loaded library: System</p>
-                    <p>SUCCESS: diskgroup DATA was mounted</p>
-                    <p>SUCCESS: diskgroup FRA was mounted</p>
-                    <p>NOTE: dependency between database optimus and diskgroup resource</p>
-                    <p>ora.DATA.dg is established</p>
-                    <p>NOTE: dependency between database optimus and diskgroup resource</p>
-                    <p>ora.FRA.dg is established</p>
-                    <p>ORA-1105 signalled during: ALTER DATABASE MOUNT /* db agent *//*</p>
-                    <p>{1:7917:278} */...</p>
-                    <p>Fri Feb 18 14:49:17 2011</p>
-                    <p>Shutting down instance (abort)</p>
-                    <p>License high water mark = 1</p>
-                    <p>USER (ospid: 9322): terminating the instance</p>
-                    <p>Instance terminated by USER, pid = 9322</p>
-                    <p>Fri Feb 18 14:49:18 2011</p>
-                    <p>Instance shutdown complete</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>                       
+NOTE: Loaded library: System
+SUCCESS: diskgroup DATA was mounted
+SUCCESS: diskgroup FRA was mounted
+NOTE: dependency between database optimus and diskgroup resource
+ora.DATA.dg is established
+NOTE: dependency between database optimus and diskgroup resource
+ora.FRA.dg is established
+ORA-1105 signalled during: ALTER DATABASE MOUNT /* db agent *//*
+{1:7917:278} */...
+Fri Feb 18 14:49:17 2011
+Shutting down instance (abort)
+License high water mark = 1
+USER (ospid: 9322): terminating the instance
+Instance terminated by USER, pid = 9322
+Fri Feb 18 14:49:18 2011
+Instance shutdown complete
+</code></pre>
                     <p>on the command shell</p>
-                    <p>&nbsp;</p>
-                    <p>$ srvctl stop instance -d optimus -i optimus1</p>
-                    <p>$ srvctl start instance -d optimus -i optimus1</p>
-                    <p>PRCR-1013 : Failed to start resource ora.optimus.db</p>
-                    <p>PRCR-1064 : Failed to start resource ora.optimus.db on node orcliprd1</p>
-                    <p>CRS-5017: The resource action "ora.optimus.db start" encountered the following error:</p>
-                    <p>ORA-01105: mount is incompatible with mounts by other instances</p>
-                    <p>ORA-01677: standby file name convert parameters differ from other instance</p>
-                    <p>CRS-2674: Start of 'ora.optimus.db' on 'orcliprd1' failed</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>    
+$ srvctl stop instance -d optimus -i optimus1
+$ srvctl start instance -d optimus -i optimus1
+PRCR-1013 : Failed to start resource ora.optimus.db
+PRCR-1064 : Failed to start resource ora.optimus.db on node orcliprd1
+CRS-5017: The resource action "ora.optimus.db start" encountered the following error:
+ORA-01105: mount is incompatible with mounts by other instances
+ORA-01677: standby file name convert parameters differ from other instance
+CRS-2674: Start of 'ora.optimus.db' on 'orcliprd1' failed
+</code></pre>
                     <p>If the dataguard traffic is only one way (don't plan to use current primary as a standby in the future, then filename convert parameters could be ommited and a instnace restart could be carried out), otherwise do a database restart
                         which means brining the system down.</p>
                     <p>&nbsp;</p>
-                    <ol start="10">
-                        <li>Another difference between 10gR2/11gR1 and 11gR2 is the local_listener and remote_listener parameters. According to Real Application Clusters Installation Guide During Oracle Database creation, the LOCAL_LISTENER parameter is automatically
-                            configured to point to the local listener for the database. The Database Agent sets the LOCAL_LISTENER parameter to a connect descriptor that does not require a TNS alias.</li>
-                    </ol>
-                    <p>&nbsp;</p>
+
+                    <pi>10. Another difference between 10gR2/11gR1 and 11gR2 is the local_listener and remote_listener parameters. According to Real Application Clusters Installation Guide During Oracle Database creation, the LOCAL_LISTENER parameter is automatically
+                        configured to point to the local listener for the database. The Database Agent sets the LOCAL_LISTENER parameter to a connect descriptor that does not require a TNS alias.</pi>
+
                     <p>You can set a value manually for LOCAL_LISTENER. However, Oracle recommends that you leave the parameter unset so that the Database Agent can maintain it automatically. If you set LOCAL_LISTENER, then the Agent does not automatically
                         update this value. If you do not set LOCAL_LISTENER, then the Database Agent automatically keeps the database associated with the Grid home's node listener updated, even as the ports or IP of that listener are changed.</p>
-                    <p>&nbsp;</p>
+
                     <p>With Oracle Clusterware 11g release 2 and later, Database Configuration Agent (DBCA) no longer sets the LOCAL_LISTENER parameter. The Oracle Clusterware agent that starts the database sets the LOCAL_LISTENER parameter dynamically,
                         and it sets it to the actual value, not an alias. So listener_alias entries are no longer needed in the tnsnames.ora file. For the REMOTE_LISTENER parameter, Oracle&nbsp; lusterware uses the EZ connect syntax scanname:scanport,
                         so no entries are needed for the REMOTE_LISTENER parameter in the tnsnames.ora file.More on 11gR2 Grid Infrastructure Single Client Access Name (SCAN) Explained [ID 887522.1]</p>
                     <p>&nbsp;</p>
-                    <ol start="11">
-                        <li>On 11gr2 remote listener is set to scan identify the standby scan name with</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>srvctl config scan</p>
-                    <p>SCAN name: prime-scan, Network: 1/192.168.0.0/255.255.255.0/eth0</p>
-                    <p>SCAN VIP name: scan1, IP: /racb-scan/192.168.0.92</p>
-                    <p>&nbsp;</p>
+
+                    <pi>11. On 11gr2 remote listener is set to scan identify the standby scan name with</pi>
+                    <pre class="wp-block-code"><code> 
+$ srvctl config scan
+SCAN name: prime-scan, Network: 1/192.168.0.0/255.255.255.0/eth0
+SCAN VIP name: scan1, IP: /racb-scan/192.168.0.92
+</code></pre>
                     <p>This will be used later on.</p>
-                    <p>&nbsp;</p>
-                    <ol start="12">
-                        <li>Copy the primary password file to standby nodes and rename accordingly. On orclis1 where instance prime1 will be running password file will be named orapwprime1 and on orclis2 orapwprime2.</li>
-                    </ol>
-                    <p>orclprd1:</p>
-                    <p>----------</p>
-                    <p>scp /oracle/product/11.2.0.3/db/dbs/orapwoptimus1 oracle@orclis1:/oracle/product/11.2.0.3/db/dbs/orapwprime1</p>
-                    <p>--scp /oracle/product/11.2.0.3/db/dbs/orapwoptimus1 oracle@admrac1:/oracle/product/11.2.0.3/db/dbs/orapwadmrac1</p>
-                    <p>&nbsp;</p>
-                    <p>orclprd2:</p>
-                    <p>----------</p>
-                    <p>scp /oracle/product/11.2.0.3/db/dbs/orapwoptimus2 oracle@orclis2:/oracle/product/11.2.0.3/db/dbs/orapwprime2</p>
-                    <p>--scp /oracle/product/11.2.0.3/db/dbs/orapwoptimus2 oracle@admrac2:/oracle/product/11.2.0.3/db/dbs/orapwadmrac2</p>
-                    <p>&nbsp;</p>
-                    <ol start="13">
-                        <li>Select one node (orclis1 in this case) on the standby cluster and create a pfile with db_name entry which will have the standby database name (not the instance name). Rename the pfile with the instance name.</li>
-                    </ol>
-                    <p>&nbsp;</p>
+
+                    <pi>12. Copy the primary password file to standby nodes and rename accordingly. On orclis1 where instance prime1 will be running password file will be named orapwprime1 and on orclis2 orapwprime2.</pi>
+                    <p></p>
+                    <pre class="wp-block-code"><code> 
+on orclprd1:
+$ scp /oracle/product/11.2.0.3/db/dbs/orapwoptimus1 oracle@orclis1:/oracle/product/11.2.0.3
+on orclprd2:
+$ scp /oracle/product/11.2.0.3/db/dbs/orapwoptimus2 oracle@orclis2:/oracle/product/11.2.0.3/db/dbs/orapwprime2
+                </code></pre>
+
+
+                    <pi>13. Select one node (orclis1 in this case) on the standby cluster and create a pfile with db_name entry which will have the standby database name (not the instance name). Rename the pfile with the instance name.</pi>
+
                     <p>cat initprime1.ora</p>
                     <p>db_name=prime</p>
-                    <p>&nbsp;</p>
-                    <ol start="14">
-                        <li>Start the instance in nomount mode</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>export ORACLE_SID=prime1</p>
-                    <p>SQL&gt; startup nomount pfile='/home/oracle/pfileDir/primeinitpfile';&nbsp; --&gt; bunu yapmak gerekiyor!!! Yapmazsan spfile direktifini kullanamıyorsun.</p>
-                    <p>SQL&gt; startup nomount pfile='/home/oracle/pfileDir/admracinitpfile';</p>
-                    <p>ORACLE instance started.</p>
-                    <p>&nbsp;</p>
-                    <p>Total System Global Area &nbsp;217157632 bytes</p>
-                    <p>Fixed Size &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;2225064 bytes</p>
-                    <p>Variable Size &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 159386712 bytes</p>
-                    <p>Database Buffers &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 50331648 bytes</p>
-                    <p>Redo Buffers &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;5214208 bytes</p>
-                    <p>&nbsp;</p>
-                    <ol start="15">
-                        <li>On primary db enable the deferred log archive destination</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter system set log_archive_dest_state_2='enable' SCOPE=both sid='*'; --&gt; for prime</p>
-                    <p>alter system set log_archive_dest_state_3='enable' SCOPE=both sid='*'; --&gt; for admrac</p>
-                    <p>&nbsp;</p>
+
+                    <pi>14. Start the instance in nomount mode</pi>
+                    <pre class="wp-block-code"><code> 
+export ORACLE_SID=prime1
+SQL> startup nomount pfile='/home/oracle/pfileDir/primeinitpfile';  --you need to do this!!!
+
+ORACLE instance started.
+
+Total System Global Area &nbsp;217157632 bytes
+Fixed Size 2225064 bytes
+Variable Size 159386712 bytes
+Database Buffers  50331648 bytes
+Redo Buffers 5214208 bytes
+                    </code></pre>
+
+                    <pi>15. On primary db enable the deferred log archive destination</pi>
+                    <pre class="wp-block-code"><code> 
+SQL> alter system set log_archive_dest_state_2='enable' SCOPE=both sid='*'; -->; for prime
+SQL> alter system set log_archive_dest_state_3='enable' SCOPE=both sid='*'; --> for admrac
+                </code></pre>
                     <ol start="16">
                         <li>On one node in the primary rac (orclprd1 in this case) connect to primary instance (target) as well standby instance (using rman auxiliary connection)</li>
                     </ol>
@@ -609,508 +632,440 @@
                     <p>connected to target database: OPTIMUS (DBID=379668842)</p>
                     <p>connected to auxiliary database: PRIME (not mounted)</p>
                     <p>/*</p>
-                    <ol start="18">
-                        <li>Delete the database files from ASM +DATA diskgroup using ASMCMD utility:</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <p>asmcmd rm '+DATASSD/PRIME/CONTROLFILE/*'</p>
-                                </td>
-                                <td>
-                                    <p>asmcmd rm '+DATASSD/ADMRAC/CONTROLFILE/*'</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>asmcmd rm '+DATASAS/PRIME/DATAFILE/*'</p>
-                                </td>
-                                <td>
-                                    <p>asmcmd rm '+DATASAS/ADMRAC/DATAFILE/*'</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>asmcmd rm '+DATASSD/PRIME/DATAFILE/*'</p>
-                                </td>
-                                <td>
-                                    <p>asmcmd rm '+DATASSD/ADMRAC/DATAFILE/*'</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>asmcmd rm '+DATASSD/PRIME/ONLINELOG/*'</p>
-                                </td>
-                                <td>
-                                    <p>asmcmd rm '+DATASSD/ADMRAC/ONLINELOG/*'</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>asmcmd rm '+DATASAS/PRIME/TEMPFILE/*'</p>
-                                </td>
-                                <td>
-                                    <p>asmcmd rm '+DATASAS/ADMRAC/TEMPFILE/*'</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>asmcmd rm '+DATASSD/PRIME/PARAMETERFILE/*'</p>
-                                </td>
-                                <td>
-                                    <p>asmcmd rm '+DATASSD/ADMRAC/PARAMETERFILE/*'</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>&nbsp;</p>
-                    <ol start="19">
-                        <li>Delete the database files from ASM +FRA diskgroup using ASMCMD utility:</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <p>asmcmd rm '+FRA/PRIME/CONTROLFILE/*'</p>
-                                </td>
-                                <td>
-                                    <p>asmcmd rm '+FRA/ADMRAC/CONTROLFILE/*'</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>asmcmd rm '+FRA/PRIME/BACKUPSET/*'</p>
-                                </td>
-                                <td>
-                                    <p>asmcmd rm '+FRA/ADMRAC/BACKUPSET/*'</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>asmcmd rm '+FRA/PRIME/ONLINELOG/*'</p>
-                                </td>
-                                <td>
-                                    <p>asmcmd rm '+FRA/ADMRAC/ONLINELOG/*'</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p>asmcmd rm '+FRA/PRIME/FLASHBACK/*'</p>
-                                </td>
-                                <td>
-                                    <p>asmcmd rm '+FRA/ADMRAC/FLASHBACK/*'</p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>*/</p>
-                    <p>&nbsp;</p>
+
+                    <pi>18. Delete the database files from ASM +DATA diskgroup using ASMCMD utility:</pi>
+                    <pre class="wp-block-code"><code> 
+asmcmd rm '+DATASSD/PRIME/CONTROLFILE/*'
+asmcmd rm '+DATASAS/PRIME/DATAFILE/*'
+asmcmd rm '+DATASSD/PRIME/DATAFILE/*'
+asmcmd rm '+DATASSD/PRIME/ONLINELOG/*'
+asmcmd rm '+DATASAS/PRIME/TEMPFILE/*'
+asmcmd rm '+DATASSD/PRIME/PARAMETERFILE/*'
+
+asmcmd rm '+DATASSD/ADMRAC/CONTROLFILE/*'
+asmcmd rm '+DATASAS/ADMRAC/DATAFILE/*'
+asmcmd rm '+DATASSD/ADMRAC/DATAFILE/*'
+asmcmd rm '+DATASSD/ADMRAC/ONLINELOG/*'
+asmcmd rm '+DATASAS/ADMRAC/TEMPFILE/*'
+asmcmd rm '+DATASSD/ADMRAC/PARAMETERFILE/*'
+</code></pre>
+
+
+
+                    <pi>19. Delete the database files from ASM +FRA diskgroup using ASMCMD utility:</pi>
+                    <pre class="wp-block-code"><code> 
+asmcmd rm '+FRA/PRIME/CONTROLFILE/*'
+asmcmd rm '+FRA/PRIME/BACKUPSET/*'
+asmcmd rm '+FRA/PRIME/ONLINELOG/*'
+asmcmd rm '+FRA/PRIME/FLASHBACK/*'
+
+asmcmd rm '+FRA/ADMRAC/CONTROLFILE/*'
+asmcmd rm '+FRA/ADMRAC/BACKUPSET/*'
+asmcmd rm '+FRA/ADMRAC/ONLINELOG/*'
+asmcmd rm '+FRA/ADMRAC/FLASHBACK/*'
+                        </code></pre>
+
+                    <p></p>
                     <p>On Standby Node A, rename any existing PFILE in $ORACLE_HOME/dbs (default location for database initialisation files)</p>
-                    <p>mv $ORACLE_HOME/dbs/initprime1.ora $ORACLE_HOME/dbs/initprime1.bak</p>
-                    <p>mv $ORACLE_HOME/dbs/initprime2.ora $ORACLE_HOME/dbs/initprime2.bak</p>
-                    <p>&nbsp;</p>
-                    <p>mv $ORACLE_HOME/dbs/initadmrac1.ora $ORACLE_HOME/dbs/initadmrac1.bak</p>
-                    <p>mv $ORACLE_HOME/dbs/initadmrac2.ora $ORACLE_HOME/dbs/initadmrac2.bak</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>From &lt;<a href="http://www.oracle11ggotchas.com/articles/RecreatePhysicalStandbyDatabaseafterrecoveryofPrimaryDatabase.htm">http://www.oracle11ggotchas.com/articles/RecreatePhysicalStandbyDatabaseafterrecoveryofPrimaryDatabase.htm</a>&gt;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>RMAN&gt;</p>
-                    <p>run</p>
-                    <p>{</p>
-                    <p>allocate channel a1 type disk ;</p>
-                    <p>allocate channel a2 type disk;</p>
-                    <p>allocate channel a3 type disk;</p>
-                    <p>allocate channel a4 type disk;</p>
-                    <p>allocate channel a5 type disk;</p>
-                    <p>allocate channel a6 type disk;</p>
-                    <p>allocate channel a7 type disk;</p>
-                    <p>allocate channel a8 type disk;</p>
-                    <p>allocate auxiliary channel stby1 type disk ;</p>
-                    <p>allocate auxiliary channel stby2 type disk ;</p>
-                    <p>allocate auxiliary channel stby3 type disk ;</p>
-                    <p>allocate auxiliary channel stby4 type disk ;</p>
-                    <p>allocate auxiliary channel stby5 type disk ;</p>
-                    <p>allocate auxiliary channel stby6 type disk ;</p>
-                    <p>allocate auxiliary channel stby7 type disk ;</p>
-                    <p>allocate auxiliary channel stby8 type disk ;</p>
-                    <p>duplicate target database for standby from active database</p>
-                    <p>spfile</p>
-                    <p>parameter_value_convert 'optimus','prime','OPTIMUS','PRIME'</p>
-                    <p>set db_unique_name='prime'</p>
-                    <p>set db_file_name_convert='+DATASSD/optimus','+DATASSD/prime','+DATASAS/optimus','+DATASAS/prime'</p>
-                    <p>set log_file_name_convert='+FRA/optimus','+FRA/prime','+DATASSD/optimus','+DATASSD/prime','+DATASAS/optimus','+DATASAS/prime'</p>
-                    <p>set control_files='+DATASSD','+FRA'</p>
-                    <p>set instance_number='1'</p>
-                    <p>set remote_listener='prime-scan.takasdom.takasbank.com.tr:3000'</p>
-                    <p>reset local_listener</p>
-                    <p>set log_archive_dest_1='LOCATION=+FRA VALID_FOR=(ALL_LOGFILES,ALL_ROLES) DB_UNIQUE_NAME=prime'</p>
-                    <p>set log_archive_dest_2='SERVICE=optimus SYNC AFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=optimus VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'</p>
-                    <p>set log_archive_dest_3='SERVICE=admrac ASYNC NOAFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=admrac VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'</p>
-                    <p>set log_archive_dest_state_2='DEFER'</p>
-                    <p>set log_archive_dest_state_3='DEFER';</p>
-                    <p>release channel a1;</p>
-                    <p>release channel a2;</p>
-                    <p>release channel a3;</p>
-                    <p>release channel a4;</p>
-                    <p>release channel a5;</p>
-                    <p>release channel a6;</p>
-                    <p>release channel a7;</p>
-                    <p>release channel a8;</p>
-                    <p>release channel stby1;</p>
-                    <p>release channel stby2;</p>
-                    <p>release channel stby3;</p>
-                    <p>release channel stby4;</p>
-                    <p>release channel stby5;</p>
-                    <p>release channel stby6;</p>
-                    <p>release channel stby7;</p>
-                    <p>release channel stby8;</p>
-                    <p>}</p>
-                    <p>&nbsp;</p>
-                    <p>Starting Duplicate Db at 18-FEB-11</p>
-                    <p>using target database control file instead of recovery catalog</p>
-                    <p>allocated channel: ORA_AUX_DISK_1</p>
-                    <p>channel ORA_AUX_DISK_1: SID=13 device type=DISK</p>
-                    <p>&nbsp;</p>
-                    <p>contents of Memory Script:</p>
-                    <p>{</p>
-                    <p>backup as copy reuse</p>
-                    <p>targetfile &nbsp;'/oracle/product/11.2.0.3/db/dbs/orapwoptimus1' auxiliary format</p>
-                    <p>'/oracle/product/11.2.0.3/db/dbs/orapwprime1' &nbsp; targetfile</p>
-                    <p>'+DATA/optimus/spfilerac11g2.ora' auxiliary format</p>
-                    <p>'/oracle/product/11.2.0.3/db/dbs/spfileprime1.ora' &nbsp; ;</p>
-                    <p>sql clone "alter system set spfile=</p>
-                    <p>''/oracle/product/11.2.0.3/db/dbs/spfileprime1.ora''";</p>
-                    <p>}</p>
-                    <p>executing Memory Script</p>
-                    <p>&nbsp;</p>
-                    <p>Starting backup at 18-FEB-11</p>
-                    <p>allocated channel: ORA_DISK_1</p>
-                    <p>channel ORA_DISK_1: SID=155 instance=optimus1 device type=DISK</p>
-                    <p>Finished backup at 18-FEB-11</p>
-                    <p>&nbsp;</p>
-                    <p>sql statement: alter system set spfile=''/oracle/product/11.2.0.3/db/dbs/spfileprime1.ora''</p>
-                    <p>&nbsp;</p>
-                    <p>contents of Memory Script:</p>
-                    <p>{</p>
-                    <p>sql clone "alter system set &nbsp;audit_file_dest =''/oracle/admin/prime/adump'' comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;dispatchers =''(PROTOCOL=TCP) (SERVICE=primeXDB)'' comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;db_unique_name =''prime'' comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;db_file_name_convert =''+DATA/optimus'', ''+DATA/prime'' comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;log_file_name_convert =''+FRA/optimus'', ''+FRA/prime'', ''+DATA/optimus'',''+DATA/prime'' comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;control_files =''+DATA'', ''+FRA'' comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;instance_number =</p>
-                    <p>1 comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;log_archive_max_processes =5 comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;fal_client =''PRIME'' comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;fal_server =''OPTIMUS1'', ''OPTIMUS2'' comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;remote_listener =''prime-scan:3000'' comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;log_archive_dest_2 =''service=OPTIMUS LGWR ASYNC NOAFFIRM max_failure=10 max_connections=5 reopen=180 valid_for=(online_logfiles,primary_role) db_unique_name=optimus'' comment='''' scope=spfile";</p>
-                    <p>sql clone "alter system set &nbsp;log_archive_dest_1 =''location=use_db_recovery_file_dest valid_for=(all_logfiles,all_roles) db_unique_name=prime'' comment='''' scope=spfile";</p>
-                    <p>shutdown clone immediate;</p>
-                    <p>startup clone nomount;</p>
-                    <p>}</p>
-                    <p>executing Memory Script</p>
-                    <p>&nbsp;</p>
-                    <p>sql statement: alter system set &nbsp;audit_file_dest =''/oracle/admin/prime/adump'' comment= '''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;dispatchers = &nbsp;''(PROTOCOL=TCP)(SERVICE=primeXDB)'' comment= '''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;db_unique_name = &nbsp;''prime'' comment='''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;db_file_name_convert =''+DATA/optimus'', ''+DATA/prime'' comment= '''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;log_file_name_convert =''+FRA/optimus'', ''+FRA/prime'', ''+DATA/optimus'',''+DATA/prime'' comment= '''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;control_files = &nbsp;''+DATA'',''+FRA'' comment= '''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;instance_number = &nbsp;1 comment= '''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;log_archive_max_processes = &nbsp;5 comment= '''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;fal_client = &nbsp;''PRIME'' comment= '''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;fal_server = &nbsp;''OPTIMUS1'',''OPTIMUS2'' comment= '''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;remote_listener = &nbsp;''prime-scan:3000'' comment= '''' scope=spfile</p>
-                    <p>sql statement: alter system set &nbsp;log_archive_dest_2 =''service=OPTIMUS LGWR ASYNC NOAFFIRM max_failure=10 max_connections=5 reopen=180 valid_for=(online_logfiles,primary_role) db_unique_name=optimus'' comment= '''' scope=spfile</p>
-                    <p>&nbsp;</p>
-                    <p>sql statement: alter system set &nbsp;log_archive_dest_1 =''location=use_db_recovery_file_dest valid_for=(all_logfiles,all_roles) db_unique_name=prime'' comment= '''' scope=spfile</p>
-                    <p>&nbsp;</p>
-                    <p>Oracle instance shut down</p>
-                    <p>&nbsp;</p>
-                    <p>connected to auxiliary database (not started)</p>
-                    <p>Oracle instance started</p>
-                    <p>&nbsp;</p>
-                    <p>Total System Global Area &nbsp; &nbsp; 630501376 bytes</p>
-                    <p>&nbsp;</p>
-                    <p>Fixed Size &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 2229120 bytes</p>
-                    <p>Variable Size &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;247467136 bytes</p>
-                    <p>Database Buffers &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 373293056 bytes</p>
-                    <p>Redo Buffers &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 7512064 bytes</p>
-                    <p>&nbsp;</p>
-                    <p>contents of Memory Script:</p>
-                    <p>{</p>
-                    <p>sql clone "alter system set &nbsp;control_files =</p>
-                    <p>''+DATA/prime/controlfile/current.256.743447505'',</p>
-                    <p>''+FRA/prime/controlfile/current.256.743447507'' comment=</p>
-                    <p>''Set by RMAN'' scope=spfile";</p>
-                    <p>backup as copy current controlfile for standby auxiliary format</p>
-                    <p>'+DATA/prime/controlfile/current.257.743447507';</p>
-                    <p>restore clone controlfile to</p>
-                    <p>'+FRA/prime/controlfile/current.257.743447507' from</p>
-                    <p>'+DATA/prime/controlfile/current.257.743447507';</p>
-                    <p>sql clone "alter system set &nbsp;control_files =</p>
-                    <p>''+DATA/prime/controlfile/current.257.743447507'',</p>
-                    <p>''+FRA/prime/controlfile/current.257.743447507'' comment=</p>
-                    <p>''Set by RMAN'' scope=spfile";</p>
-                    <p>shutdown clone immediate;</p>
-                    <p>startup clone nomount;</p>
-                    <p>}</p>
-                    <p>executing Memory Script</p>
-                    <p>&nbsp;</p>
-                    <p>sql statement: alter system set &nbsp;control_files =</p>
-                    <p>''+DATA/prime/controlfile/current.256.743447505'',</p>
-                    <p>''+FRA/prime/controlfile/current.256.743447507'' comment= ''Set by</p>
-                    <p>RMAN'' scope=spfile</p>
-                    <p>&nbsp;</p>
-                    <p>Starting backup at 18-FEB-11</p>
-                    <p>using channel ORA_DISK_1</p>
-                    <p>channel ORA_DISK_1: starting datafile copy</p>
-                    <p>copying standby control file</p>
-                    <p>output file name=/oracle/product/11.2.0.3/db/dbs/snapcf_optimus1.f</p>
-                    <p>tag=TAG20110218T161053 RECID=1 STAMP=743443854</p>
-                    <p>channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:07</p>
-                    <p>Finished backup at 18-FEB-11</p>
-                    <p>&nbsp;</p>
-                    <p>Starting restore at 18-FEB-11</p>
-                    <p>allocated channel: ORA_AUX_DISK_1</p>
-                    <p>channel ORA_AUX_DISK_1: SID=19 instance=prime1 device type=DISK</p>
-                    <p>&nbsp;</p>
-                    <p>channel ORA_AUX_DISK_1: copied control file copy</p>
-                    <p>Finished restore at 18-FEB-11</p>
-                    <p>&nbsp;</p>
-                    <p>sql statement: alter system set &nbsp;control_files =</p>
-                    <p>''+DATA/prime/controlfile/current.257.743447507'',</p>
-                    <p>''+FRA/prime/controlfile/current.257.743447507'' comment= ''Set by</p>
-                    <p>RMAN'' scope=spfile</p>
-                    <p>&nbsp;</p>
-                    <p>Oracle instance shut down</p>
-                    <p>&nbsp;</p>
-                    <p>connected to auxiliary database (not started)</p>
-                    <p>Oracle instance started</p>
-                    <p>&nbsp;</p>
-                    <p>Total System Global Area &nbsp; &nbsp; 630501376 bytes</p>
-                    <p>&nbsp;</p>
-                    <p>Fixed Size &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 2229120 bytes</p>
-                    <p>Variable Size &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;247467136 bytes</p>
-                    <p>Database Buffers &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 373293056 bytes</p>
-                    <p>Redo Buffers &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 7512064 bytes</p>
-                    <p>&nbsp;</p>
-                    <p>contents of Memory Script:</p>
-                    <p>{</p>
-                    <p>sql clone 'alter database mount standby database';</p>
-                    <p>}</p>
-                    <p>executing Memory Script</p>
-                    <p>&nbsp;</p>
-                    <p>sql statement: alter database mount standby database</p>
-                    <p>RMAN-05529: WARNING: DB_FILE_NAME_CONVERT resulted in invalid ASM</p>
-                    <p>names; names changed to disk group only.</p>
-                    <p>&nbsp;</p>
-                    <p>contents of Memory Script:</p>
-                    <p>{</p>
-                    <p>set newname for tempfile &nbsp;1 to</p>
-                    <p>"+data";</p>
-                    <p>switch clone tempfile all;</p>
-                    <p>set newname for datafile &nbsp;1 to</p>
-                    <p>"+data";</p>
-                    <p>set newname for datafile &nbsp;2 to</p>
-                    <p>"+data";</p>
-                    <p>set newname for datafile &nbsp;3 to</p>
-                    <p>"+data";</p>
-                    <p>set newname for datafile &nbsp;4 to</p>
-                    <p>"+data";</p>
-                    <p>set newname for datafile &nbsp;5 to</p>
-                    <p>"+data";</p>
-                    <p>set newname for datafile &nbsp;6 to</p>
-                    <p>"+data";</p>
-                    <p>set newname for datafile &nbsp;7 to</p>
-                    <p>"+data";</p>
-                    <p>backup as copy reuse</p>
-                    <p>datafile &nbsp;1 auxiliary format</p>
-                    <p>"+data" &nbsp; datafile</p>
-                    <p>2 auxiliary format</p>
-                    <p>"+data" &nbsp; datafile</p>
-                    <p>3 auxiliary format</p>
-                    <p>"+data" &nbsp; datafile</p>
-                    <p>4 auxiliary format</p>
-                    <p>"+data" &nbsp; datafile</p>
-                    <p>5 auxiliary format</p>
-                    <p>"+data" &nbsp; datafile</p>
-                    <p>6 auxiliary format</p>
-                    <p>"+data" &nbsp; datafile</p>
-                    <p>7 auxiliary format</p>
-                    <p>"+data" &nbsp; ;</p>
-                    <p>sql 'alter system archive log current';</p>
-                    <p>}</p>
-                    <p>executing Memory Script</p>
-                    <p>&nbsp;</p>
-                    <p>executing command: SET NEWNAME</p>
-                    <p>&nbsp;</p>
-                    <p>renamed tempfile 1 to +data in control file</p>
-                    <p>&nbsp;</p>
-                    <p>executing command: SET NEWNAME</p>
-                    <p>&nbsp;</p>
-                    <p>executing command: SET NEWNAME</p>
-                    <p>&nbsp;</p>
-                    <p>executing command: SET NEWNAME</p>
-                    <p>&nbsp;</p>
-                    <p>executing command: SET NEWNAME</p>
-                    <p>&nbsp;</p>
-                    <p>executing command: SET NEWNAME</p>
-                    <p>&nbsp;</p>
-                    <p>executing command: SET NEWNAME</p>
-                    <p>&nbsp;</p>
-                    <p>executing command: SET NEWNAME</p>
-                    <p>&nbsp;</p>
-                    <p>Starting backup at 18-FEB-11</p>
-                    <p>using channel ORA_DISK_1</p>
-                    <p>channel ORA_DISK_1: starting datafile copy</p>
-                    <p>input datafile file number=00002</p>
-                    <p>name=+DATA/optimus/datafile/sysaux.257.740770047</p>
-                    <p>output file name=+DATA/prime/datafile/sysaux.258.743447539</p>
-                    <p>tag=TAG20110218T161124</p>
-                    <p>channel ORA_DISK_1: datafile copy complete, elapsed time: 00:01:25</p>
-                    <p>channel ORA_DISK_1: starting datafile copy</p>
-                    <p>input datafile file number=00001</p>
-                    <p>name=+DATA/optimus/datafile/system.256.740770045</p>
-                    <p>output file name=+DATA/prime/datafile/system.259.743447625</p>
-                    <p>tag=TAG20110218T161124</p>
-                    <p>channel ORA_DISK_1: datafile copy complete, elapsed time: 00:01:15</p>
-                    <p>channel ORA_DISK_1: starting datafile copy</p>
-                    <p>input datafile file number=00003</p>
-                    <p>name=+DATA/optimus/datafile/undotbs1.258.740770049</p>
-                    <p>output file name=+DATA/prime/datafile/undotbs1.260.743447699</p>
-                    <p>tag=TAG20110218T161124</p>
-                    <p>channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:25</p>
-                    <p>channel ORA_DISK_1: starting datafile copy</p>
-                    <p>input datafile file number=00005</p>
-                    <p>name=+DATA/optimus/datafile/undotbs2.264.740770355</p>
-                    <p>output file name=+DATA/prime/datafile/undotbs2.261.743447725</p>
-                    <p>tag=TAG20110218T161124</p>
-                    <p>channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:07</p>
-                    <p>channel ORA_DISK_1: starting datafile copy</p>
-                    <p>input datafile file number=00004 name=+DATA/optimus/datafile/users.259.740770049</p>
-                    <p>output file name=+DATA/prime/datafile/users.262.743447733 tag=TAG20110218T161124</p>
-                    <p>channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:01</p>
-                    <p>channel ORA_DISK_1: starting datafile copy</p>
-                    <p>input datafile file number=00006 name=+DATA/optimus/datafile/test.268.741633047</p>
-                    <p>output file name=+DATA/prime/datafile/test.263.743447733 tag=TAG20110218T161124</p>
-                    <p>channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:01</p>
-                    <p>channel ORA_DISK_1: starting datafile copy</p>
-                    <p>input datafile file number=00007 name=+DATA/optimus/datafile/test.269.741633183</p>
-                    <p>output file name=+DATA/prime/datafile/test.264.743447735 tag=TAG20110218T161124</p>
-                    <p>channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:01</p>
-                    <p>Finished backup at 18-FEB-11</p>
-                    <p>&nbsp;</p>
-                    <p>sql statement: alter system archive log current</p>
-                    <p>&nbsp;</p>
-                    <p>contents of Memory Script:</p>
-                    <p>{</p>
-                    <p>switch clone datafile all;</p>
-                    <p>}</p>
-                    <p>executing Memory Script</p>
-                    <p>&nbsp;</p>
-                    <p>datafile 1 switched to datafile copy</p>
-                    <p>input datafile copy RECID=1 STAMP=743447740 file</p>
-                    <p>name=+DATA/prime/datafile/system.259.743447625</p>
-                    <p>datafile 2 switched to datafile copy</p>
-                    <p>input datafile copy RECID=2 STAMP=743447740 file</p>
-                    <p>name=+DATA/prime/datafile/sysaux.258.743447539</p>
-                    <p>datafile 3 switched to datafile copy</p>
-                    <p>input datafile copy RECID=3 STAMP=743447740 file</p>
-                    <p>name=+DATA/prime/datafile/undotbs1.260.743447699</p>
-                    <p>datafile 4 switched to datafile copy</p>
-                    <p>input datafile copy RECID=4 STAMP=743447740 file</p>
-                    <p>name=+DATA/prime/datafile/users.262.743447733</p>
-                    <p>datafile 5 switched to datafile copy</p>
-                    <p>input datafile copy RECID=5 STAMP=743447740 file</p>
-                    <p>name=+DATA/prime/datafile/undotbs2.261.743447725</p>
-                    <p>datafile 6 switched to datafile copy</p>
-                    <p>input datafile copy RECID=6 STAMP=743447740 file</p>
-                    <p>name=+DATA/prime/datafile/test.263.743447733</p>
-                    <p>datafile 7 switched to datafile copy</p>
-                    <p>input datafile copy RECID=7 STAMP=743447740 file</p>
-                    <p>name=+DATA/prime/datafile/test.264.743447735</p>
-                    <p>Finished Duplicate Db at 18-FEB-11</p>
-                    <p>&nbsp;</p>
-                    <ol start="18">
-                        <li>Once the above command suceeds on primary on the standby(orclis1 node) run the log apply command</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter database recover managed standby database using current logfile disconnect;</p>
-                    <p>Database altered.</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code> 
+mv $ORACLE_HOME/dbs/initprime1.ora $ORACLE_HOME/dbs/initprime1.bak
+mv $ORACLE_HOME/dbs/initprime2.ora $ORACLE_HOME/dbs/initprime2.bak
+
+mv $ORACLE_HOME/dbs/initadmrac1.ora $ORACLE_HOME/dbs/initadmrac1.bak
+mv $ORACLE_HOME/dbs/initadmrac2.ora $ORACLE_HOME/dbs/initadmrac2.bak
+</code></pre>
+                    <p></p>
+                    <pre class="wp-block-code"><code>                   
+RMAN>
+run
+{
+allocate channel a1 type disk ;
+allocate channel a2 type disk;
+allocate channel a3 type disk;
+allocate channel a4 type disk;
+allocate channel a5 type disk;
+allocate channel a6 type disk;
+allocate channel a7 type disk;
+allocate channel a8 type disk;
+allocate auxiliary channel stby1 type disk ;
+allocate auxiliary channel stby2 type disk ;
+allocate auxiliary channel stby3 type disk ;
+allocate auxiliary channel stby4 type disk ;
+allocate auxiliary channel stby5 type disk ;
+allocate auxiliary channel stby6 type disk ;
+allocate auxiliary channel stby7 type disk ;
+allocate auxiliary channel stby8 type disk ;
+duplicate target database for standby from active database
+spfile
+parameter_value_convert 'optimus','prime','OPTIMUS','PRIME'
+set db_unique_name='prime'
+set db_file_name_convert='+DATASSD/optimus','+DATASSD/prime','+DATASAS/optimus','+DATASAS/prime'
+set log_file_name_convert='+FRA/optimus','+FRA/prime','+DATASSD/optimus','+DATASSD/prime','+DATASAS/optimus','+DATASAS/prime'
+set control_files='+DATASSD','+FRA'
+set instance_number='1'
+set remote_listener='prime-scan.takasdom.takasbank.com.tr:3000'
+reset local_listener
+set log_archive_dest_1='LOCATION=+FRA VALID_FOR=(ALL_LOGFILES,ALL_ROLES) DB_UNIQUE_NAME=prime'
+set log_archive_dest_2='SERVICE=optimus SYNC AFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=optimus VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'
+set log_archive_dest_3='SERVICE=admrac ASYNC NOAFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=admrac VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'
+set log_archive_dest_state_2='DEFER'
+set log_archive_dest_state_3='DEFER';
+release channel a1;
+release channel a2;
+release channel a3;
+release channel a4;
+release channel a5;
+release channel a6;
+release channel a7;
+release channel a8;
+release channel stby1;
+release channel stby2;
+release channel stby3;
+release channel stby4;
+release channel stby5;
+release channel stby6;
+release channel stby7;
+release channel stby8;
+}
+
+Starting Duplicate Db at 18-FEB-11
+using target database control file instead of recovery catalog
+allocated channel: ORA_AUX_DISK_1
+channel ORA_AUX_DISK_1: SID=13 device type=DISK
+
+contents of Memory Script:
+{
+backup as copy reuse
+targetfile '/oracle/product/11.2.0.3/db/dbs/orapwoptimus1' auxiliary format
+'/oracle/product/11.2.0.3/db/dbs/orapwprime1'  targetfile
+'+DATA/optimus/spfilerac11g2.ora' auxiliary format
+'/oracle/product/11.2.0.3/db/dbs/spfileprime1.ora'  ;
+sql clone "alter system set spfile=
+''/oracle/product/11.2.0.3/db/dbs/spfileprime1.ora''";
+}
+executing Memory Script
+
+Starting backup at 18-FEB-11
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=155 instance=optimus1 device type=DISK
+Finished backup at 18-FEB-11
+
+sql statement: alter system set spfile=''/oracle/product/11.2.0.3/db/dbs/spfileprime1.ora''
+
+contents of Memory Script:
+{
+sql clone "alter system set audit_file_dest =''/oracle/admin/prime/adump'' comment='''' scope=spfile";
+sql clone "alter system set dispatchers =''(PROTOCOL=TCP) (SERVICE=primeXDB)'' comment='''' scope=spfile";
+sql clone "alter system set db_unique_name =''prime'' comment='''' scope=spfile";
+sql clone "alter system set db_file_name_convert =''+DATA/optimus'', ''+DATA/prime'' comment='''' scope=spfile";
+sql clone "alter system set log_file_name_convert =''+FRA/optimus'', ''+FRA/prime'', ''+DATA/optimus'',''+DATA/prime'' comment='''' scope=spfile";
+sql clone "alter system set control_files =''+DATA'', ''+FRA'' comment='''' scope=spfile";
+sql clone "alter system set instance_number =
+1 comment='''' scope=spfile";
+sql clone "alter system set log_archive_max_processes =5 comment='''' scope=spfile";
+sql clone "alter system set fal_client =''PRIME'' comment='''' scope=spfile";
+sql clone "alter system set fal_server =''OPTIMUS1'', ''OPTIMUS2'' comment='''' scope=spfile";
+sql clone "alter system set remote_listener =''prime-scan:3000'' comment='''' scope=spfile";
+sql clone "alter system set log_archive_dest_2 =''service=OPTIMUS LGWR ASYNC NOAFFIRM max_failure=10 max_connections=5 reopen=180 valid_for=(online_logfiles,primary_role) db_unique_name=optimus'' comment='''' scope=spfile";
+sql clone "alter system set log_archive_dest_1 =''location=use_db_recovery_file_dest valid_for=(all_logfiles,all_roles) db_unique_name=prime'' comment='''' scope=spfile";
+shutdown clone immediate;
+startup clone nomount;
+}
+executing Memory Script
+
+sql statement: alter system set audit_file_dest =''/oracle/admin/prime/adump'' comment= '''' scope=spfile
+sql statement: alter system set dispatchers = ''(PROTOCOL=TCP)(SERVICE=primeXDB)'' comment= '''' scope=spfile
+sql statement: alter system set db_unique_name = ''prime'' comment='''' scope=spfile
+sql statement: alter system set db_file_name_convert =''+DATA/optimus'', ''+DATA/prime'' comment= '''' scope=spfile
+sql statement: alter system set log_file_name_convert =''+FRA/optimus'', ''+FRA/prime'', ''+DATA/optimus'',''+DATA/prime'' comment= '''' scope=spfile
+sql statement: alter system set control_files = ''+DATA'',''+FRA'' comment= '''' scope=spfile
+sql statement: alter system set instance_number = 1 comment= '''' scope=spfile
+sql statement: alter system set log_archive_max_processes = 5 comment= '''' scope=spfile
+sql statement: alter system set fal_client = ''PRIME'' comment= '''' scope=spfile
+sql statement: alter system set fal_server = ''OPTIMUS1'',''OPTIMUS2'' comment= '''' scope=spfile
+sql statement: alter system set remote_listener = ''prime-scan:3000'' comment= '''' scope=spfile
+sql statement: alter system set log_archive_dest_2 =''service=OPTIMUS LGWR ASYNC NOAFFIRM max_failure=10 max_connections=5 reopen=180 valid_for=(online_logfiles,primary_role) db_unique_name=optimus'' comment= '''' scope=spfile
+
+sql statement: alter system set log_archive_dest_1 =''location=use_db_recovery_file_dest valid_for=(all_logfiles,all_roles) db_unique_name=prime'' comment= '''' scope=spfile
+
+Oracle instance shut down
+
+connected to auxiliary database (not started)
+Oracle instance started
+
+Total System Global Area   630501376 bytes
+
+Fixed Size           2229120 bytes
+Variable Size        247467136 bytes
+Database Buffers       373293056 bytes
+Redo Buffers          7512064 bytes
+
+contents of Memory Script:
+{
+sql clone "alter system set control_files =
+''+DATA/prime/controlfile/current.256.743447505'',
+''+FRA/prime/controlfile/current.256.743447507'' comment=
+''Set by RMAN'' scope=spfile";
+backup as copy current controlfile for standby auxiliary format
+'+DATA/prime/controlfile/current.257.743447507';
+restore clone controlfile to
+'+FRA/prime/controlfile/current.257.743447507' from
+'+DATA/prime/controlfile/current.257.743447507';
+sql clone "alter system set control_files =
+''+DATA/prime/controlfile/current.257.743447507'',
+''+FRA/prime/controlfile/current.257.743447507'' comment=
+''Set by RMAN'' scope=spfile";
+shutdown clone immediate;
+startup clone nomount;
+}
+executing Memory Script
+
+sql statement: alter system set control_files =
+''+DATA/prime/controlfile/current.256.743447505'',
+''+FRA/prime/controlfile/current.256.743447507'' comment= ''Set by
+RMAN'' scope=spfile
+
+Starting backup at 18-FEB-11
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting datafile copy
+copying standby control file
+output file name=/oracle/product/11.2.0.3/db/dbs/snapcf_optimus1.f
+tag=TAG20110218T161053 RECID=1 STAMP=743443854
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:07
+Finished backup at 18-FEB-11
+
+Starting restore at 18-FEB-11
+allocated channel: ORA_AUX_DISK_1
+channel ORA_AUX_DISK_1: SID=19 instance=prime1 device type=DISK
+
+channel ORA_AUX_DISK_1: copied control file copy
+Finished restore at 18-FEB-11
+
+sql statement: alter system set control_files =
+''+DATA/prime/controlfile/current.257.743447507'',
+''+FRA/prime/controlfile/current.257.743447507'' comment= ''Set by
+RMAN'' scope=spfile
+
+Oracle instance shut down
+
+connected to auxiliary database (not started)
+Oracle instance started
+
+Total System Global Area   630501376 bytes
+
+Fixed Size           2229120 bytes
+Variable Size        247467136 bytes
+Database Buffers       373293056 bytes
+Redo Buffers          7512064 bytes
+
+contents of Memory Script:
+{
+sql clone 'alter database mount standby database';
+}
+executing Memory Script
+
+sql statement: alter database mount standby database
+RMAN-05529: WARNING: DB_FILE_NAME_CONVERT resulted in invalid ASM
+names; names changed to disk group only.
+
+contents of Memory Script:
+{
+set newname for tempfile 1 to
+"+data";
+switch clone tempfile all;
+set newname for datafile 1 to
+"+data";
+set newname for datafile 2 to
+"+data";
+set newname for datafile 3 to
+"+data";
+set newname for datafile 4 to
+"+data";
+set newname for datafile 5 to
+"+data";
+set newname for datafile 6 to
+"+data";
+set newname for datafile 7 to
+"+data";
+backup as copy reuse
+datafile 1 auxiliary format
+"+data"  datafile
+2 auxiliary format
+"+data"  datafile
+3 auxiliary format
+"+data"  datafile
+4 auxiliary format
+"+data"  datafile
+5 auxiliary format
+"+data"  datafile
+6 auxiliary format
+"+data"  datafile
+7 auxiliary format
+"+data"  ;
+sql 'alter system archive log current';
+}
+executing Memory Script
+
+executing command: SET NEWNAME
+
+renamed tempfile 1 to +data in control file
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+executing command: SET NEWNAME
+
+Starting backup at 18-FEB-11
+using channel ORA_DISK_1
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00002
+name=+DATA/optimus/datafile/sysaux.257.740770047
+output file name=+DATA/prime/datafile/sysaux.258.743447539
+tag=TAG20110218T161124
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:01:25
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00001
+name=+DATA/optimus/datafile/system.256.740770045
+output file name=+DATA/prime/datafile/system.259.743447625
+tag=TAG20110218T161124
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:01:15
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00003
+name=+DATA/optimus/datafile/undotbs1.258.740770049
+output file name=+DATA/prime/datafile/undotbs1.260.743447699
+tag=TAG20110218T161124
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:25
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00005
+name=+DATA/optimus/datafile/undotbs2.264.740770355
+output file name=+DATA/prime/datafile/undotbs2.261.743447725
+tag=TAG20110218T161124
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:07
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00004 name=+DATA/optimus/datafile/users.259.740770049
+output file name=+DATA/prime/datafile/users.262.743447733 tag=TAG20110218T161124
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:01
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00006 name=+DATA/optimus/datafile/test.268.741633047
+output file name=+DATA/prime/datafile/test.263.743447733 tag=TAG20110218T161124
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:01
+channel ORA_DISK_1: starting datafile copy
+input datafile file number=00007 name=+DATA/optimus/datafile/test.269.741633183
+output file name=+DATA/prime/datafile/test.264.743447735 tag=TAG20110218T161124
+channel ORA_DISK_1: datafile copy complete, elapsed time: 00:00:01
+Finished backup at 18-FEB-11
+
+sql statement: alter system archive log current
+
+contents of Memory Script:
+{
+switch clone datafile all;
+}
+executing Memory Script
+
+datafile 1 switched to datafile copy
+input datafile copy RECID=1 STAMP=743447740 file
+name=+DATA/prime/datafile/system.259.743447625
+datafile 2 switched to datafile copy
+input datafile copy RECID=2 STAMP=743447740 file
+name=+DATA/prime/datafile/sysaux.258.743447539
+datafile 3 switched to datafile copy
+input datafile copy RECID=3 STAMP=743447740 file
+name=+DATA/prime/datafile/undotbs1.260.743447699
+datafile 4 switched to datafile copy
+input datafile copy RECID=4 STAMP=743447740 file
+name=+DATA/prime/datafile/users.262.743447733
+datafile 5 switched to datafile copy
+input datafile copy RECID=5 STAMP=743447740 file
+name=+DATA/prime/datafile/undotbs2.261.743447725
+datafile 6 switched to datafile copy
+input datafile copy RECID=6 STAMP=743447740 file
+name=+DATA/prime/datafile/test.263.743447733
+datafile 7 switched to datafile copy
+input datafile copy RECID=7 STAMP=743447740 file
+name=+DATA/prime/datafile/test.264.743447735
+Finished Duplicate Db at 18-FEB-11
+</code></pre>
+
+                    <pi>20. Once the above command suceeds on primary on the standby(orclis1 node) run the log apply command</pi>
+                    <pre class="wp-block-code"><code>
+
+SQL> alter database recover managed standby database using current logfile disconnect;
+Database altered.
+</code></pre>
                     <p>On the database alert log it could be observed archived logs being applied</p>
-                    <p>&nbsp;</p>
-                    <p>Fri Feb 18 17:19:56 2011</p>
-                    <p>alter database recover managed standby database using current logfile disconnect</p>
-                    <p>Attempt to start background Managed Standby Recovery process (prime1)</p>
-                    <p>Fri Feb 18 17:19:56 2011</p>
-                    <p>MRP0 started with pid=60, OS id=8639</p>
-                    <p>MRP0: Background Managed Standby Recovery process started (prime1)</p>
-                    <p>started logmerger process</p>
-                    <p>Fri Feb 18 17:20:01 2011</p>
-                    <p>Managed Standby Recovery starting Real Time Apply</p>
-                    <p>Parallel Media Recovery started with 2 slaves</p>
-                    <p>Waiting for all non-current ORLs to be archived...</p>
-                    <p>All non-current ORLs have been archived.</p>
-                    <p>Fri Feb 18 17:20:02 2011</p>
-                    <p>Media Recovery Log</p>
-                    <p>+FRA/prime/archivelog/2011_02_18/thread_1_seq_53.269.743447835</p>
-                    <p>Media Recovery Log</p>
-                    <p>+FRA/prime/archivelog/2011_02_18/thread_2_seq_43.268.743447835</p>
-                    <p>Completed: alter database recover managed standby database using</p>
-                    <p>current logfile disconnect</p>
-                    <p>Media Recovery Log</p>
-                    <p>+FRA/prime/archivelog/2011_02_18/thread_1_seq_54.271.743447847</p>
-                    <p>Media Recovery Log</p>
-                    <p>+FRA/prime/archivelog/2011_02_18/thread_2_seq_44.270.743447847</p>
-                    <p>Media Recovery Log</p>
-                    <p>+FRA/prime/archivelog/2011_02_18/thread_2_seq_45.273.743447887</p>
-                    <p>Media Recovery Log</p>
-                    <p>+FRA/prime/archivelog/2011_02_18/thread_1_seq_55.272.743447883</p>
-                    <p>Media Recovery Waiting for thread 1 sequence 56 (in transit)</p>
-                    <p>Recovery of Online Redo Log: Thread 1 Group 6 Seq 56 Reading mem 0</p>
-                    <p>Mem# 0: +DATA/prime/onlinelog/group_6.270.743447749</p>
-                    <p>Mem# 1: +FRA/prime/onlinelog/group_6.263.743447751</p>
-                    <p>Media Recovery Waiting for thread 2 sequence 46 (in transit)</p>
-                    <p>Recovery of Online Redo Log: Thread 2 Group 9 Seq 46 Reading mem 0</p>
-                    <p>Mem# 0: +DATA/prime/onlinelog/group_9.273.743447755</p>
-                    <p>Mem# 1: +FRA/prime/onlinelog/group_9.266.743447755</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>
+Fri Feb 18 17:19:56 2011
+alter database recover managed standby database using current logfile disconnect
+Attempt to start background Managed Standby Recovery process (prime1)
+Fri Feb 18 17:19:56 2011
+MRP0 started with pid=60, OS id=8639
+MRP0: Background Managed Standby Recovery process started (prime1)
+started logmerger process
+Fri Feb 18 17:20:01 2011
+Managed Standby Recovery starting Real Time Apply
+Parallel Media Recovery started with 2 slaves
+Waiting for all non-current ORLs to be archived...
+All non-current ORLs have been archived.
+Fri Feb 18 17:20:02 2011
+Media Recovery Log
++FRA/prime/archivelog/2011_02_18/thread_1_seq_53.269.743447835
+Media Recovery Log
++FRA/prime/archivelog/2011_02_18/thread_2_seq_43.268.743447835
+Completed: alter database recover managed standby database using
+current logfile disconnect
+Media Recovery Log
++FRA/prime/archivelog/2011_02_18/thread_1_seq_54.271.743447847
+Media Recovery Log
++FRA/prime/archivelog/2011_02_18/thread_2_seq_44.270.743447847
+Media Recovery Log
++FRA/prime/archivelog/2011_02_18/thread_2_seq_45.273.743447887
+Media Recovery Log
++FRA/prime/archivelog/2011_02_18/thread_1_seq_55.272.743447883
+Media Recovery Waiting for thread 1 sequence 56 (in transit)
+Recovery of Online Redo Log: Thread 1 Group 6 Seq 56 Reading mem 0
+Mem# 0: +DATA/prime/onlinelog/group_6.270.743447749
+Mem# 1: +FRA/prime/onlinelog/group_6.263.743447751
+Media Recovery Waiting for thread 2 sequence 46 (in transit)
+Recovery of Online Redo Log: Thread 2 Group 9 Seq 46 Reading mem 0
+Mem# 0: +DATA/prime/onlinelog/group_9.273.743447755
+Mem# 1: +FRA/prime/onlinelog/group_9.266.743447755
+</code></pre>
                     <p>Another way to find out is to connect into the standby instance (prime1 running on orclis1 node) and issue</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; select sequence#,thread#,applied from v$archived_log;</p>
-                    <p>&nbsp;</p>
-                    <p>SEQUENCE# &nbsp; &nbsp;THREAD# APPLIED</p>
-                    <p>---------- ---------- ---------</p>
-                    <p>53 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 YES</p>
-                    <p>43 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;2 YES</p>
-                    <p>54 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 YES</p>
-                    <p>44 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;2 YES</p>
-                    <p>55 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;1 YES</p>
-                    <p>45 &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;2 IN-MEMORY</p>
-                    <p>6 rows selected.</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>
+SQL> select sequence#,thread#,applied from v$archived_log;
+
+SEQUENCE# THREAD#       APPLIED
+---------- ---------- ---------
+53          1           YES
+43          2           YES
+54          1           YES
+44          2           YES
+55          1           YES
+45          2           IN-MEMORY
+6 rows selected.
+</code></pre>
                     <p>which shows YES on archive log applied column.</p>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
                     <p>&nbsp;</p>
-                    <ol start="19">
+                    <ol start="20">
                         <li>With above configuration inplace the data guard is setup and working. The next step is to bring the standby database under the control of the cluster. For this on the standby instance create a pfile from the spfile that was created
                             during the duplication process.</li>
                     </ol>
                     <p>&nbsp;</p>
                     <p>SQL&gt; create pfile='/home/oracle/stdbypfile.ora' from spfile;</p>
                     <p>&nbsp;</p>
-                    <ol start="20">
+                    <ol start="21">
                         <li>Edit the pfile and remove any references to primary db (optimus) except db_name this must be same as primary db. Set instance specific instance_number, undo_tablespace, fal_client and thread. pfile content after the edit is given
                             below
                         </li>
@@ -1178,7 +1133,7 @@
                     <p>prime2.thread=2</p>
                     <p>&nbsp;</p>
                     <p><strong>--Eski pfile dosyasına (~/primeinitpfile)&nbsp; /home/oracle/stdbypfile.ora i&ccedil;erisindeki "controlfile" satırı koyulur.. ********* PRIME : apply 2. node !!!!!!!!</strong></p>
-                    <ol start="21">
+                    <ol start="22">
                         <li>Shutdown the database and startup mount and create a spfile with +ASM diskgroup as the location</li>
                     </ol>
                     <p>&nbsp;</p>
@@ -1213,7 +1168,7 @@
                     <p>spfile='+DATASSD/prime/parameterfile/spfile.287.850861069'</p>
                     <p>SQL&gt; shutdown immediate;</p>
                     <p>&nbsp;</p>
-                    <ol start="22">
+                    <ol start="23">
                         <li>Create pfile file on each node's oracle home ($ORACLE_HOME/dbs) that points to the spfile by adding one line that referes to the spfile</li>
                     </ol>
                     <p>&nbsp;</p>
@@ -1228,16 +1183,16 @@
                     <p>&nbsp;</p>
                     <p>Above is for orclis1, create initprime2.ora on orclis2.</p>
                     <p>&nbsp;</p>
-                    <ol start="23">
+                    <ol start="24">
                         <li>Once above pfiles are created remove the spfile in $ORACLE_HOME/dbs that was created as part of the duplication. --&gt;???</li>
                     </ol>
                     <p>&nbsp;</p>
-                    <ol start="24">
+                    <ol start="25">
                         <li>Before bringing the standby instance under cluster control check it could be started on all other nodes with their respective instances. In this case orclis2 since this is a two node rac, export ORACLE_SID to prime2 and start the
                             instance in mount mode. Resolve any issues (init parameter related) before proceeding to the next step)</li>
                     </ol>
                     <p>&nbsp;</p>
-                    <ol start="25">
+                    <ol start="26">
                         <li>To add the database and instances to the cluster configuration run (not needed if there was already a cluster and you're just resyncronizing it)</li>
                     </ol>
                     <p>&nbsp;</p>
@@ -1270,7 +1225,7 @@
                     <p>Type: RAC</p>
                     <p>Database is administrator managed</p>
                     <p>&nbsp;</p>
-                    <ol start="26">
+                    <ol start="27">
                         <li>Test the configuration with starting the entire standby database</li>
                     </ol>
                     <p>&nbsp;</p>
@@ -1309,7 +1264,7 @@
                     <p>local_listener &nbsp;string</p>
                     <p>(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP(HOST=172.30.33.51)(PORT=3000))))</p>
                     <p>&nbsp;</p>
-                    <ol start="26">
+                    <ol start="28">
                         <li>Start the recovery process on one of the standby instances.</li>
                     </ol>
                     <p>&nbsp;</p>
@@ -1330,7 +1285,7 @@
                     <p>&nbsp;</p>
                     <p>This concludes the setup of RAC-RAC data guard.</p>
                     <p>&nbsp;</p>
-                    <ol start="27">
+                    <ol start="29">
                         <li>To make sure archive logs don't get deleted on primary without being applied on standby set the log deletion policy to applied on standby. For this at least one log archive locations must be mandatory.</li>
                     </ol>
                     <p>&nbsp;</p>
