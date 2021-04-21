@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sentinity</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="../../css/all.css">
+
+
+    <!-- --------- Owl-Carousel ------------------->
+    <link rel="stylesheet" href="../../css/owl.carousel.min.css">
+    <link rel="stylesheet" href="../../css/owl.theme.default.min.css">
+
+    <!-- ------------ AOS Library ------------------------- -->
+    <link rel="stylesheet" href="./css/aos.css">
+
+    <!-- Custom Style   -->
+    <link rel="stylesheet" href="../../css/Style.css">
+    <link rel="shortcut icon" href="../../assets/favicon.png" type="image/png" />
+</head>
+
+<body>
+
+    <!-- ----------------------------  Navigation ---------------------------------------------- -->
+
+    <nav class="nav">
+        <div class="nav-menu flex-row">
+            <div class="nav-brand">
+                <a href="/index.html" class="text-gray">Sentinity</a>
+            </div>
+            <div class="toggle-collapse">
+                <div class="toggle-icons">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+            <div>
+                <ul class="nav-items">
+                    <li class="nav-link">
+                        <a href="/index.html">Home</a>
+                    </li>
+                    <!--
+                    <li class="nav-link">
+                        <a href="#">Category</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Archive</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Pages</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Contact Us</a>
+                    </li>
+                    -->
+                </ul>
+            </div>
+            <div class="social text-gray">
+                <a href=""><i class="fab fa-facebook-f"></i></a>
+                <a href=""><i class="fab fa-instagram"></i></a>
+                <a href=""><i class="fab fa-twitter"></i></a>
+                <a href=""><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ------------x---------------  Navigation --------------------------x------------------- -->
+
+    <!----------------------------- Main Site Section ------------------------------>
+
+    <main>
+
+
+        <!-- ---------------------- Site Content -------------------------->
+
+        <section class="container">
+            <div class="site-content">
+
+                <div class="content-image">
+                    <h2>&nbsp;Archive Log Management</h2>
+                    <p>Note: It is recommended to perform a backup of the database (after a shutdown normal or immediate) prior to changing the archive status of a database.</p>
+                    <p>If you would like to perform these tasks using Database Console see the post Enable/Disable Archive Log Mode 10g/11g using Database Console.</p>
+                    <p>&nbsp;</p>
+                    <h3><strong>Enable Archive Log Mode</strong></h3>
+                    <p>The following are the steps required to enable archive log mode on an Oracle 10g or 11g database.</p>
+                    <p>Verify the database log mode.</p>
+                    <p>&nbsp;</p>
+                    <p>[oracle@ora1 ~]$ sqlplus / as sysdba</p>
+                    <p>SQL*Plus: Release 11.2.0.1.0 Production on Thu Apr 8 12:02:52 2010</p>
+                    <p>Copyright (c) 1982, 2009, Oracle.&nbsp; All rights reserved.</p>
+                    <p>Connected to:</p>
+                    <p>Oracle Database 11g Enterprise Edition Release 11.2.0.1.0 - Production</p>
+                    <p>With the Partitioning, OLAP, Data Mining and Real Application Testing options</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; archive log list</p>
+                    <p>Database log mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Archive Mode</p>
+                    <p>Automatic archival&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Disabled</p>
+                    <p>Archive destination&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; USE_DB_RECOVERY_FILE_DEST</p>
+                    <p>Oldest online log sequence&nbsp;&nbsp;&nbsp;&nbsp; 25</p>
+                    <p>Current log sequence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 27</p>
+                    <p>SQL&gt;</p>
+                    <p>The log mode is No Archive Mode. Note that Archive destination is USE_DB_RECOVERY_FILE_DEST. You can determine the path by looking at the parameter RECOVERY_FILE_DEST.</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; show parameter recovery_file_dest</p>
+                    <p>&nbsp;</p>
+                    <p>NAME&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; TYPE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        VALUE
+                    </p>
+                    <p>------------------------------------ ----------- ------------------------------</p>
+                    <p>db_recovery_file_dest&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; string&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /u01/app/oracle/flash_recovery</p>
+                    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        _area
+                    </p>
+                    <p>db_recovery_file_dest_size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; big integer 3852M</p>
+                    <p>SQL&gt;</p>
+                    <p>By default, archive logs will be written to the flash recovery area. If you do not want to write archive logs to the flash recovery area you can set the parameter LOG_ARCHIVE_DEST_n to the location in which you wish to write archive
+                        logs.
+                    </p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; alter system set log_archive_dest_1='LOCATION=/u02/app/oracle/oradata/orcl/arch' scope = both;</p>
+                    <p>&nbsp;</p>
+                    <p>System altered.</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; archive log list;</p>
+                    <p>Database log mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Archive Mode</p>
+                    <p>Automatic archival&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Disabled</p>
+                    <p>Archive destination&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /u02/app/oracle/oradata/orcl/arch</p>
+                    <p>Oldest online log sequence&nbsp;&nbsp;&nbsp;&nbsp; 25</p>
+                    <p>Current log sequence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 27</p>
+                    <p>SQL&gt;</p>
+                    <p>Now we shutdown the database and bring it backup in mount mode.</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; shutdown immediate</p>
+                    <p>Database closed.</p>
+                    <p>Database dismounted.</p>
+                    <p>ORACLE instance shut down.</p>
+                    <p>SQL&gt; startup mount</p>
+                    <p>ORACLE instance started.</p>
+                    <p>&nbsp;</p>
+                    <p>Total System Global Area&nbsp; 849530880 bytes</p>
+                    <p>Fixed Size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1339824 bytes</p>
+                    <p>Variable Size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 511708752 bytes</p>
+                    <p>Database Buffers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 331350016 bytes</p>
+                    <p>Redo Buffers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5132288 bytes</p>
+                    <p>Database mounted.</p>
+                    <p>SQL&gt;</p>
+                    <p>Lastly all that is needed it set archive log mode and open the database.</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; alter database archivelog;</p>
+                    <p>&nbsp;</p>
+                    <p>Database altered.</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; alter database open;</p>
+                    <p>&nbsp;</p>
+                    <p>Database altered.</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; archive log list</p>
+                    <p>Database log mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Archive Mode</p>
+                    <p>Automatic archival&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Enabled</p>
+                    <p>Archive destination&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /u02/app/oracle/oradata/orcl/arch</p>
+                    <p>Oldest online log sequence&nbsp;&nbsp;&nbsp;&nbsp; 25</p>
+                    <p>Next log sequence to archive&nbsp;&nbsp; 27</p>
+                    <p>Current log sequence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 27</p>
+                    <p>SQL&gt;</p>
+                    <p>We can now see that archive log mode is enabled. Notice that Automatic archive is enabled as well. In Oracle 9i an earlier another parameter needed to be set in order to enable automatic archiving. This in no longer the case in 10g
+                        and 11g as automatic archiving is enabled when the database is placed in archive log mode.</p>
+                    <p>&nbsp;</p>
+                    <p>You can switch to the log file to see that an archive is written to archive log location.</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; alter system switch logfile;</p>
+                    <p>&nbsp;</p>
+                    <p>System altered.</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; host</p>
+                    <p>[oracle@ora1 ~]$ ls /u02/app/oracle/oradata/orcl/arch</p>
+                    <p>1_27_711369564.dbf</p>
+                    <p>[oracle@ora1 ~]$ exit</p>
+                    <p>exit</p>
+                    <p>&nbsp;&nbsp;</p>
+                    <h3><strong>Disable Archive Log Mode</strong></h3>
+                    <p>Note: It is recommended to perform a backup of the database (after a shutdown normal or immediate) prior to changing the archive status of a database.</p>
+                    <p>&nbsp;</p>
+                    <p>The following are the steps required to disable archive log mode on an Oracle 10g or 11g database.</p>
+                    <p>&nbsp;</p>
+                    <p>Verify the database log mode.</p>
+                    <p>&nbsp;</p>
+                    <p>[oracle@ora1 ~]$ sqlplus / as sysdba</p>
+                    <p>&nbsp;</p>
+                    <p>SQL*Plus: Release 11.2.0.1.0 Production on Thu Apr 8 12:54:05 2010</p>
+                    <p>&nbsp;</p>
+                    <p>Copyright (c) 1982, 2009, Oracle.&nbsp; All rights reserved.</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>Connected to:</p>
+                    <p>Oracle Database 11g Enterprise Edition Release 11.2.0.1.0 - Production</p>
+                    <p>With the Partitioning, OLAP, Data Mining and Real Application Testing options</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; archive log list;</p>
+                    <p>Database log mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Archive Mode</p>
+                    <p>Automatic archival&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Enabled</p>
+                    <p>Archive destination&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /u02/app/oracle/oradata/orcl/arch</p>
+                    <p>Oldest online log sequence&nbsp;&nbsp;&nbsp;&nbsp; 26</p>
+                    <p>Next log sequence to archive&nbsp;&nbsp; 28</p>
+                    <p>Current log sequence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 28</p>
+                    <p>SQL&gt;</p>
+                    <p>The Database log mode is Archive mode. Next we shut down the database and bring up back up in mount mode.</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; shutdown immediate</p>
+                    <p>Database closed.</p>
+                    <p>Database dismounted.</p>
+                    <p>ORACLE instance shut down.</p>
+                    <p>SQL&gt; startup mount</p>
+                    <p>ORACLE instance started.</p>
+                    <p>&nbsp;</p>
+                    <p>Total System Global Area&nbsp; 849530880 bytes</p>
+                    <p>Fixed Size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1339824 bytes</p>
+                    <p>Variable Size&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 511708752 bytes</p>
+                    <p>Database Buffers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 331350016 bytes</p>
+                    <p>Redo Buffers&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 5132288 bytes</p>
+                    <p>Database mounted.</p>
+                    <p>SQL&gt;</p>
+                    <p>All that is left is to disable archive log mode and open the database.</p>
+                    <p>&nbsp;</p>
+                    <p><br /> SQL&gt; alter database noarchivelog;</p>
+                    <p>&nbsp;</p>
+                    <p>Database altered.</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; alter database open;</p>
+                    <p>&nbsp;</p>
+                    <p>Database altered.</p>
+                    <p>&nbsp;</p>
+                    <p>SQL&gt; archive log list;</p>
+                    <p>Database log mode&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; No Archive Mode</p>
+                    <p>Automatic archival&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Disabled</p>
+                    <p>Archive destination&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /u02/app/oracle/oradata/orcl/arch</p>
+                    <p>Oldest online log sequence&nbsp;&nbsp;&nbsp;&nbsp; 26</p>
+                    <p>Current log sequence&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 28</p>
+                    <p>SQL&gt;</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- -----------x---------- Site Content -------------x------------>
+
+    </main>
+
+    <!---------------x------------- Main Site Section ---------------x-------------->
+
+
+    <!-- --------------------------- Footer ---------------------------------------- -->
+
+    <footer class="footer">
+        <div class="container">
+            <div class="about-us" data-aos="fade-right" data-aos-delay="200">
+                <h2>Sentinity</h2>
+                <p>.</p>
+            </div>
+            <div class="newsletter" data-aos="fade-right" data-aos-delay="200">
+                <h2>Newsletter</h2>
+                <p>Stay update with our latest</p>
+                <div class="form-element">
+                    <input type="text" placeholder="Email"><span><i class="fas fa-chevron-right"></i></span>
+                </div>
+            </div>
+
+            <div class="follow" data-aos="fade-left" data-aos-delay="200">
+                <h2>Follow us</h2>
+                <p>Let us be Social</p>
+                <div>
+                    <i class="fab fa-facebook-f"></i>
+                    <i class="fab fa-twitter"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-youtube"></i>
+                </div>
+            </div>
+        </div>
+        <div class="rights flex-row">
+            <h4 class="text-gray">
+                Copyright ©2021 All rights reserved | made by Sentinity
+            </h4>
+        </div>
+        <div class="move-up">
+            <span><i class="fas fa-arrow-circle-up fa-2x"></i></span>
+        </div>
+    </footer>
+
+    <!-- -------------x------------- Footer --------------------x------------------- -->
+
+    <!-- Jquery Library file -->
+    <script src="../../js/Jquery3.4.1.min.js"></script>
+
+    <!-- --------- Owl-Carousel js ------------------->
+    <script src="../../js/owl.carousel.min.js"></script>
+
+    <!-- ------------ AOS js Library  ------------------------- -->
+    <script src="../../js/aos.js"></script>
+
+    <!-- Custom Javascript file -->
+    <script src="../../js/main.js"></script>
+</body>
+
+</html>
