@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sentinity</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="../../css/all.css">
+
+
+    <!-- --------- Owl-Carousel ------------------->
+    <link rel="stylesheet" href="../../css/owl.carousel.min.css">
+    <link rel="stylesheet" href="../../css/owl.theme.default.min.css">
+
+    <!-- ------------ AOS Library ------------------------- -->
+    <link rel="stylesheet" href="./css/aos.css">
+
+    <!-- Custom Style   -->
+    <link rel="stylesheet" href="../../css/Style.css">
+    <link rel="shortcut icon" href="../../assets/favicon.png" type="image/png" />
+</head>
+<style type="text/css">
+    code {
+        padding: 3px 6px
+    }
+    
+    code,
+    pre {
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+        border-radius: 2px;
+        background: rgba(233, 235, 239, .5);
+    }
+    
+    code:focus,
+    pre:focus {
+        outline: none
+    }
+    
+    pre {
+        overflow: auto;
+        padding: 15px 20px
+    }
+    
+    pre code {
+        padding: 0;
+        background: transparent
+    }
+    
+    .wp-block-code code {
+        white-space: pre-wrap;
+        overflow-wrap: break-word
+    }
+</style>
+
+<body>
+
+    <!-- ----------------------------  Navigation ---------------------------------------------- -->
+
+    <nav class="nav">
+        <div class="nav-menu flex-row">
+            <div class="nav-brand">
+                <a href="/index.html" class="text-gray">Sentinity</a>
+            </div>
+            <div class="toggle-collapse">
+                <div class="toggle-icons">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+            <div>
+                <ul class="nav-items">
+                    <li class="nav-link">
+                        <a href="/index.html">Home</a>
+                    </li>
+                    <!--
+                    <li class="nav-link">
+                        <a href="#">Category</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Archive</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Pages</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Contact Us</a>
+                    </li>
+                    -->
+                </ul>
+            </div>
+            <div class="social text-gray">
+                <a href=""><i class="fab fa-facebook-f"></i></a>
+                <a href=""><i class="fab fa-instagram"></i></a>
+                <a href=""><i class="fab fa-twitter"></i></a>
+                <a href=""><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ------------x---------------  Navigation --------------------------x------------------- -->
+
+    <!----------------------------- Main Site Section ------------------------------>
+
+    <main>
+
+        <!------------------------ Site Title ---------------------->
+
+
+        <!------------x----------- Site Title ----------x----------->
+
+
+
+        <!-- ---------------------- Site Content -------------------------->
+
+        <section class="container">
+            <div class="site-content">
+                <div class="post-body">
+                    <h3>RAC 11.2.0.3 + ASM: Multiplex control files</h3>
+                    <p></p>
+                    <p>To add new control file after RAC installation with ASM storage:</p>
+                    <pi>1. View current control_files parameter (as oracle owner)</pi>
+                    <pre class="wp-block-code"><code>
+SQL*Plus: Release 11.2.0.3.0 Production on Sun Jun 23 19:18:10 2013
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+Connected to:
+Oracle Database 11g Enterprise Edition Release 11.2.0.3.0 - 64bit Production
+With the Partitioning, Real Application Clusters, Automatic Storage
+Management, OLAP,
+Data Mining and Real Application Testing options
+
+SQL> select * from v$controlfile;
+
+STATUS     NAME                                                   IS_RECOVERY_DEST_FILE BLOCK_SIZE      FILE_SIZE_BLKS
+-------    ------------------------------------------------------ --------------------- -------------   --------------
+(NULL)     +DATASSD/optimus/controlfile/current.260.815585353     NO                    16384            3382
+
+Give a hint for RMAN, to copy original one to +FRA
+
+SQL> alter system set control_files='+DATASSD/optimus/controlfile/current.260.815585353','+FRA' scope=spfile sid='*';
+</code></pre>
+
+                    <pi>2. Stop RAC database</pi>
+
+                    <pre class="wp-block-code"><code>
+$ srvctl stop database -d optimus
+</code></pre>
+                    <pi>3. Start database in nomount</pi>
+                    <pre class="wp-block-code"><code>
+$ srvctl start database -d  optimus  -o nomount
+
+SQL> sho parameter control_files
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+control_files                        string      +DATASSD/optimus/controlfile/current.260.815585353, +FRA
+</code></pre>
+
+                    <pi>4. Copy the current controlfile in new location with RMAN</pi>
+                    <pre class="wp-block-code"><code>
+RMAN> restore controlfile from
+'+DATASSD/optimus/controlfile/current.260.815585353';
+
+Starting restore at 23-JUN-13
+using target database control file instead of recovery catalog
+allocated channel: ORA_DISK_1
+channel ORA_DISK_1: SID=3936 instance=optimus1 device type=DISK
+
+channel ORA_DISK_1: copied control file copy
+output file name=+DATASSD/optimus/controlfile/current.260.815585353
+output file name=+FRA/optimus/controlfile/current.3720.818882603
+
+RMAN> exit
+</code></pre>
+                    <pi>5. View location and name of the new control file with asmcmd (as grid owner)</pi>
+                    <pre class="wp-block-code"><code>
+[oracle@orclprd1 ~]$ asmcmd
+ASMCMD> cd fra
+ASMCMD> ls
+OPTIMUS/
+ASMCMD> cd op*
+ASMCMD> cd con*
+ASMCMD> ls
+current.3720.818882603
+
+ASMCMD> exit
+</code></pre>
+
+
+                    <pi>6. Alter parameter control_files to contain both control files names</pi>
+                    <pre class="wp-block-code"><code>
+$ sqlplus /nolog
+
+SQL*Plus: Release 11.2.0.3.0 Production on Thu Aug 30 10:36:01 2012
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+SQL> conn / as sysdba
+Connected.
+SQL> alter system set control_files='+DATASSD/optimus/controlfile/current.260.815585353','+FRA/optimus/controlfile/current.3720.818882603' scope=spfile sid='*';
+System altered.
+
+[oracle@orclprd1 ~]$ srvctl start database -d optimus
+
+SQL> select * from v$controlfile;
+
+STATUS     NAME                                                   IS_RECOVERY_DEST_FILE BLOCK_SIZE      FILE_SIZE_BLKS
+-------    ------------------------------------------------------ --------------------- -------------   --------------
+(NULL)     +DATASSD/optimus/controlfile/current.260.815585353     NO                    16384           3382
+(NULL)     +FRA/optimus/controlfile/current.3720.818882603        YES                   16384           3382
+
+SQL> exit
+Disconnected from Oracle Database 11g Enterprise Edition Release
+11.2.0.3.0 - 64bit Production
+With the Partitioning, Real Application Clusters, Automatic Storage
+Management, Oracle Label Security,
+OLAP, Data Mining, Oracle Database Vault and Real Application Testing options
+</code></pre>
+
+                    <pi>7. View RAC database status (as grid owner)</pi>
+
+                    <pre class="wp-block-code"><code>
+$ crsctl stat res -t
+--------------------------------------------------------------------------------
+NAME           TARGET  STATE        SERVER                   STATE_DETAILS
+--------------------------------------------------------------------------------
+Local Resources
+--------------------------------------------------------------------------------
+......................
+ora.oradb.db
+      1        ONLINE  ONLINE       oracle-node-1            Open
+      2        ONLINE  INTERMEDIATE oracle-node-2            Dismounted
+....................
+</code></pre>
+
+                    <pi>8. Restart RAC database</pi>
+                    <pre class="wp-block-code"><code>
+$ srvctl stop database -d optimus
+$ srvctl start database -d optimus
+</code></pre>
+                    <pi>9. Check new setting of parameter control_files</pi>
+                    <pre class="wp-block-code"><code>
+[oracle@oracle-node-1 ~]$ sqlplus /nolog
+
+SQL*Plus: Release 11.2.0.3.0 Production on Thu Aug 30 10:40:38 2012
+
+Copyright (c) 1982, 2011, Oracle.  All rights reserved.
+
+SQL> conn / as sysdba
+Connected.
+SQL> show parameter control
+
+NAME                                 TYPE        VALUE
+------------------------------------ ----------- ------------------------------
+control_file_record_keep_time        integer     7
+control_files                        string      +DATA/oradb/controlfile/curren
+                                                 t.260.792506879, +FRA/oradb/co
+                                                 ntrolfile/current.270.79267164
+                                                 1
+control_management_pack_access       string      DIAGNOSTIC+TUNING
+SQL>
+</code></pre>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- -----------x---------- Site Content -------------x------------>
+
+    </main>
+
+    <!---------------x------------- Main Site Section ---------------x-------------->
+
+
+    <!-- --------------------------- Footer ---------------------------------------- -->
+
+    <footer class="footer">
+        <div class="container">
+            <div class="about-us" data-aos="fade-right" data-aos-delay="200">
+                <h2>Sentinity</h2>
+                <p>.</p>
+            </div>
+
+            <div class="follow" data-aos="fade-left" data-aos-delay="200">
+                <h2>Follow us</h2>
+                <p>Let us be Social</p>
+                <div>
+                    <i class="fab fa-facebook-f"></i>
+                    <i class="fab fa-twitter"></i>
+                    <i class="fab fa-instagram"></i>
+                </div>
+            </div>
+        </div>
+        <div class="rights flex-row">
+            <h4 class="text-gray">
+                Copyright ©2021 All rights reserved | made by Sentinity
+            </h4>
+        </div>
+        <div class="move-up">
+            <span><i class="fas fa-arrow-circle-up fa-2x"></i></span>
+        </div>
+    </footer>
+
+    <!-- -------------x------------- Footer --------------------x------------------- -->
+
+    <!-- Jquery Library file -->
+    <script src="../../js/Jquery3.4.1.min.js"></script>
+
+    <!-- --------- Owl-Carousel js ------------------->
+    <script src="../../js/owl.carousel.min.js"></script>
+
+    <!-- ------------ AOS js Library  ------------------------- -->
+    <script src="../../js/aos.js"></script>
+
+    <!-- Custom Javascript file -->
+    <script src="../../js/main.js"></script>
+</body>
+
+</html>
