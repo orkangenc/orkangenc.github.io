@@ -134,31 +134,30 @@
                 <div class="news-content news-post-main-content">
                     <h2><u>11gR2 RAC to RAC Data Guard Configuration</u></h2>
 
-                    <p>The initial setup is not much different between RAC-RAC and RAC-Single instance data guard, in a way setting up the data guard is same with some additional setps at the end of setup in the way of bringing the</p>
-                    <p>Standby database under the control of clusterware. The primary RAC environment consists of two nodes, hostname orcliprd1 and orcliprd2. The primary database name is optimus and two instances</p>
-                    <p>are optimus1 (running on orcliprd1 node) and optimus2 (on orcliprd2).</p>
-                    <p>&nbsp;</p>
-                    <p>The standby RAC environment also consists of two nodes (symmetrical data guard) hostname orclis1 and orclis2. The standby database will be named prime and the corresponding instances will be prime1 (on</p>
-                    <p>orclis1) and prime2 (on orclis2).</p>
-                    <p>&nbsp;</p>
+                    <p>The initial setup is not much different between RAC-RAC and RAC-Single instance data guard, in a way setting up the data guard is same with some additional setps at the end of setup in the way of bringing the Standby database under
+                        the control of clusterware. The primary RAC environment consists of two nodes, hostname orcliprd1 and orcliprd2. The primary database name is optimus and two instances are optimus1 (running on orcliprd1 node) and optimus2 (on orcliprd2).</p>
+                    <p></p>
+                    <p>The standby RAC environment also consists of two nodes (symmetrical data guard) hostname orclis1 and orclis2. The standby database will be named prime and the corresponding instances will be prime1 (on orclis1) and prime2 (on orclis2).</p>
+                    <p></p>
                     <p>The software version is 11.2.0.2 on both primary and standby (both grid home and oracle home). Primary site has database created and standby site has grid infrastructure and oracle home software installed.</p>
-                    <p>&nbsp;</p>
-                    <p><strong>From Data Guard Concepts and Administration</strong></p>
-                    <p>&nbsp;</p>
+                    <p></p>
+                    <p><u>From Data Guard Concepts and Administration</u></p>
+                    <p></p>
                     <p>New 11.2 Features Common to Redo Apply and SQL Apply As of Oracle Database 11g Release 2 (11.2.0.2), Oracle Data Guard is fully integrated with Oracle Real Application Clusters One Node (Oracle RAC One Node). A Data Guard configuration
                         can now consist of a primary database and up to 30 standby databases. The FAL_CLIENT database initialization parameter is no longer required. The default archive destination used by the Oracle Automatic Storage Management (Oracle
                         ASM) feature and the fast recovery area feature has changed from LOG_ARCHIVE_DEST_10 to LOG_ARCHIVE_DEST_1. Redo transport compression is no longer limited to compressing redo data only when a redo gap is being resolved. When compression
                         is enabled for a destination, all redo data sent to that destination is compressed.</p>
                     <p>The new ALTER SYSTEM FLUSH REDO SQL statement can be used at failover time to flush unsent redo from a mounted primary database to a standby database, thereby allowing a zero data loss failover to be performed even if the primary database
                         is not running in a zero data loss data protection mode. See Section 8.2.2 for more information.</p>
-                    <p>&nbsp;</p>
-                    <p>New 11.2 Features Specific to Redo Apply</p>
-                    <p>You can configure apply lag tolerance in a real-time query environment by using the new STANDBY_MAX_DATA_DELAY parameter. You can use the new ALTER SESSION SYNC WITH PRIMARY SQL statement to</p>
-                    <p>ensure that a suitably configured physical standby database is synchronized with the primary database as of the time the statement is issued. The V$DATAGUARD_STATS view has been enhanced to a greater degree of accuracy in many of its
-                        columns, including apply lag and transport lag. You can view a histogram of apply lag values on the physical standby. To do so, query the new V$STANDBY_EVENT_HISTOGRAM view. A corrupted data block in a primary database can be automatically
-                        replaced with an uncorrupted copy of that block from a physical standby database that is operating in real-time query mode. A</p>
-                    <p>corrupted block in a physical standby database can also be automatically replaced with an uncorrupted copy of the block from the primary database.</p>
-                    <p>&nbsp;</p>
+                    <p></p>
+                    <p><u>New 11.2 Features Specific to Redo Apply</u></p>
+                    <p>You can configure apply lag tolerance in a real-time query environment by using the new STANDBY_MAX_DATA_DELAY parameter. You can use the new ALTER SESSION SYNC WITH PRIMARY SQL statement to ensure that a suitably configured physical
+                        standby database is synchronized with the primary database as of the time the statement is issued. The V$DATAGUARD_STATS view has been enhanced to a greater degree of accuracy in many of its columns, including apply lag and transport
+                        lag. You can view a histogram of apply lag values on the physical standby. To do so, query the new V$STANDBY_EVENT_HISTOGRAM view. A corrupted data block in a primary database can be automatically replaced with an uncorrupted copy
+                        of that block from a physical standby database that is operating in real-time query mode. A corrupted block in a physical standby database can also be automatically replaced with an uncorrupted copy of the block from the primary
+                        database.
+                    </p>
+                    <p></p>
                     <pi>
                         1. On the standby ASM instances would have been created when grid infrastructure was installed but not the ASM diskgroups. Using asmca create diskgroup on the standby ASM instances. In this case both primary and standby ASM diskgroups are named +DATA
                         and +FRA
@@ -174,7 +173,7 @@ $ cd admin/
 $ mkdir prime
 $ cd prime/
 $ mkdir adump dpdump hdump pfile</code></pre>
-                    <p>&nbsp;</p>
+                    <p></p>
 
                     <pi>3. It is assumed primary db is in archivelog mode if not put the db in archive log mode. This is required since duplication is done using active database.</pi>
                     <p></p>
@@ -423,7 +422,7 @@ OPTIMUSSCAN =
 (SERVICE_NAME = optimus)
 )
 )
-&nbsp;
+
 OPTIMUS =
 (DESCRIPTION =
 (ADDRESS = (PROTOCOL = TCP)(HOST = optimus1-vip)(PORT = 3000))
@@ -433,7 +432,7 @@ OPTIMUS =
 (SERVICE_NAME = optimus)
 )
 )
-&nbsp;
+
 OPTIMUS1 =
 (DESCRIPTION =
 (ADDRESS = (PROTOCOL = TCP)(HOST = optimus1-vip)(PORT = 3000))
@@ -443,8 +442,8 @@ OPTIMUS1 =
 (INSTANCE_NAME = optimus1)
 )
 )
-&nbsp;
-&nbsp;
+
+
 OPTIMUS2 =
 (DESCRIPTION =
 (ADDRESS = (PROTOCOL = TCP)(HOST = optimus2-vip)(PORT = 3000))
@@ -454,7 +453,7 @@ OPTIMUS2 =
 (INSTANCE_NAME = optimus2)
 )
 )
-&nbsp;
+
 PRIME =
 (DESCRIPTION =
 (ADDRESS = (PROTOCOL = TCP)(HOST = prime1-vip)(PORT = 3000))
@@ -464,7 +463,7 @@ PRIME =
 (SERVICE_NAME = prime)
 )
 )
-&nbsp;
+
 PRIME1 =
 (DESCRIPTION =
 (ADDRESS = (PROTOCOL = TCP)(HOST = prime1-vip)(PORT = 3000))
@@ -474,8 +473,8 @@ PRIME1 =
 (INSTANCE_NAME = prime1)
 )
 )
-&nbsp;
-&nbsp;
+
+
 PRIME2 =
 (DESCRIPTION =
 (ADDRESS = (PROTOCOL = TCP)(HOST = prime2-vip)(PORT = 3000))
@@ -493,9 +492,10 @@ PRIME2 =
                     <pre class="wp-block-code"><code>SQL> create pfile='/home/oracle/pfileDir/admracinitpfile' from spfile;</code></pre>
 
 
-                    <pi>9. Modify the initialization parameters on the primary db. Remote archive dest state is set to defer, enable it before running the standby duplication. LGWR with ASYNC and NOAFFIRM is used as the redo</pi>
+                    <pi>9. Modify the initialization parameters on the primary db. </pi>
 
-                    <p>transport this could be changed to suite the protection mode. Also FAL_CLIENT parameter has been set to each instance. This could be set to OPTIMUS TNS entry which has all entries.</p>
+                    <p>Remote archive dest state is set to defer, enable it before running the standby duplication. LGWR with ASYNC and NOAFFIRM is used as the redo transport, this could be changed to suite the protection mode. Also FAL_CLIENT parameter
+                        has been set to each instance. This could be set to OPTIMUS TNS entry which has all entries.</p>
                     <pre class="wp-block-code"><code>SQL> create pfile='/home/oracle/optimusinitpfile.ora' from spfile;
 alter system set log_archive_max_processes=6 scope=both;
 alter system set DB_FILE_NAME_CONVERT='+DATASSD/prime','+DATASSD/optimus','+DATASAS/prime','+DATASAS/optimus' scope=spfile;
@@ -534,7 +534,7 @@ CRS-2674: Start of 'ora.optimus.db' on 'orcliprd1' failed
 </code></pre>
                     <p>If the dataguard traffic is only one way (don't plan to use current primary as a standby in the future, then filename convert parameters could be ommited and a instnace restart could be carried out), otherwise do a database restart
                         which means brining the system down.</p>
-                    <p>&nbsp;</p>
+                    <p></p>
 
                     <pi>10. Another difference between 10gR2/11gR1 and 11gR2 is the local_listener and remote_listener parameters. According to Real Application Clusters Installation Guide During Oracle Database creation, the LOCAL_LISTENER parameter is automatically
                         configured to point to the local listener for the database. The Database Agent sets the LOCAL_LISTENER parameter to a connect descriptor that does not require a TNS alias.</pi>
@@ -543,9 +543,9 @@ CRS-2674: Start of 'ora.optimus.db' on 'orcliprd1' failed
                         update this value. If you do not set LOCAL_LISTENER, then the Database Agent automatically keeps the database associated with the Grid home's node listener updated, even as the ports or IP of that listener are changed.</p>
 
                     <p>With Oracle Clusterware 11g release 2 and later, Database Configuration Agent (DBCA) no longer sets the LOCAL_LISTENER parameter. The Oracle Clusterware agent that starts the database sets the LOCAL_LISTENER parameter dynamically,
-                        and it sets it to the actual value, not an alias. So listener_alias entries are no longer needed in the tnsnames.ora file. For the REMOTE_LISTENER parameter, Oracle&nbsp; lusterware uses the EZ connect syntax scanname:scanport,
-                        so no entries are needed for the REMOTE_LISTENER parameter in the tnsnames.ora file.More on 11gR2 Grid Infrastructure Single Client Access Name (SCAN) Explained [ID 887522.1]</p>
-                    <p>&nbsp;</p>
+                        and it sets it to the actual value, not an alias. So listener_alias entries are no longer needed in the tnsnames.ora file. For the REMOTE_LISTENER parameter, Oracle lusterware uses the EZ connect syntax scanname:scanport, so no
+                        entries are needed for the REMOTE_LISTENER parameter in the tnsnames.ora file.More on 11gR2 Grid Infrastructure Single Client Access Name (SCAN) Explained [ID 887522.1]</p>
+                    <p></p>
 
                     <pi>11. On 11gr2 remote listener is set to scan identify the standby scan name with</pi>
                     <pre class="wp-block-code"><code> 
@@ -577,7 +577,7 @@ SQL> startup nomount pfile='/home/oracle/pfileDir/primeinitpfile';  --you need t
 
 ORACLE instance started.
 
-Total System Global Area &nbsp;217157632 bytes
+Total System Global Area 217157632 bytes
 Fixed Size 2225064 bytes
 Variable Size 159386712 bytes
 Database Buffers  50331648 bytes
@@ -589,49 +589,48 @@ Redo Buffers 5214208 bytes
 SQL> alter system set log_archive_dest_state_2='enable' SCOPE=both sid='*'; -->; for prime
 SQL> alter system set log_archive_dest_state_3='enable' SCOPE=both sid='*'; --> for admrac
                 </code></pre>
-                    <ol start="16">
-                        <li>On one node in the primary rac (orclprd1 in this case) connect to primary instance (target) as well standby instance (using rman auxiliary connection)</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>rman target / auxiliary sys/******@prime1</p>
-                    <p>&nbsp;</p>
-                    <p>Recovery Manager: Release 11.2.0.2.0 - Production on Fri Feb 18 15:12:39 2011</p>
-                    <p>&nbsp;</p>
-                    <p>Copyright (c) 1982, 2009, Oracle and/or its affiliates. &nbsp;All rights reserved.</p>
-                    <p>&nbsp;</p>
-                    <p>connected to target database: OPTIMUS (DBID=379668842)</p>
-                    <p>connected to auxiliary database: PRIME (not mounted)</p>
-                    <p>&nbsp;</p>
-                    <ol start="17">
-                        <li>Run the duplication command with</li>
-                    </ol>
-                    <p>duplicate target database for standby from active database</p>
-                    <p>spfile</p>
-                    <p>parameter_value_convert 'optimus','prime','OPTIMUS','PRIME'</p>
-                    <p>set db_unique_name='prime'</p>
-                    <p>set db_file_name_convert='+DATASSD/optimus','+DATASSD/prime','+DATASAS/optimus','+DATASAS/prime'</p>
-                    <p>set log_file_name_convert='+FRA/optimus','+FRA/prime','+DATASSD/optimus','+DATASSD/prime','+DATASAS/optimus','+DATASAS/prime'</p>
-                    <p>set control_files='+DATASSD','+FRA'</p>
-                    <p>set instance_number='1'</p>
-                    <p>set remote_listener='prime-scan.takasdom.takasbank.com.tr:3000'</p>
-                    <p>reset local_listener</p>
-                    <p>set log_archive_dest_1='LOCATION=+FRA VALID_FOR=(ALL_LOGFILES,ALL_ROLES) DB_UNIQUE_NAME=prime'</p>
-                    <p>set log_archive_dest_2='SERVICE=optimus SYNC AFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=optimus VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'</p>
-                    <p>set log_archive_dest_3='SERVICE=admrac ASYNC NOAFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=admrac VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'</p>
-                    <p>set log_archive_dest_state_2='DEFER'</p>
-                    <p>&nbsp;</p>
+
+                    <pi>16. On one node in the primary rac (orclprd1 in this case) connect to primary instance (target) as well standby instance (using rman auxiliary connection)</pi>
+                    <pre class="wp-block-code"><code>
+rman target / auxiliary sys/******@prime1
+
+Recovery Manager: Release 11.2.0.2.0 - Production on Fri Feb 18 15:12:39 2011
+
+Copyright (c) 1982, 2009, Oracle and/or its affiliates. All rights reserved.
+
+connected to target database: OPTIMUS (DBID=379668842)
+connected to auxiliary database: PRIME (not mounted)
+</code></pre>
+
+                    <pi>17. Run the duplication command with</pi>
+                    <pre class="wp-block-code"><code>
+duplicate target database for standby from active database
+spfile
+parameter_value_convert 'optimus','prime','OPTIMUS','PRIME'
+set db_unique_name='prime'
+set db_file_name_convert='+DATASSD/optimus','+DATASSD/prime','+DATASAS/optimus','+DATASAS/prime'
+set log_file_name_convert='+FRA/optimus','+FRA/prime','+DATASSD/optimus','+DATASSD/prime','+DATASAS/optimus','+DATASAS/prime'
+set control_files='+DATASSD','+FRA'
+set instance_number='1'
+set remote_listener='prime-scan.takasdom.takasbank.com.tr:3000'
+reset local_listener
+set log_archive_dest_1='LOCATION=+FRA VALID_FOR=(ALL_LOGFILES,ALL_ROLES) DB_UNIQUE_NAME=prime'
+set log_archive_dest_2='SERVICE=optimus SYNC AFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=optimus VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'
+set log_archive_dest_3='SERVICE=admrac ASYNC NOAFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=admrac VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'
+set log_archive_dest_state_2='DEFER'
+</code></pre>
                     <p>Key parameters are data file and log file name converters as well as the parameter value converter which maps primary environment values to appropriate standby environment values. local_listener is reset as it is auto set by grid infrastructure.
                         remote_listener value is set the scan ip and port identified earlier.</p>
-                    <p>&nbsp;</p>
-                    <p>rman target / auxiliary sys/Architect123@prime1</p>
-                    <p>&nbsp;</p>
-                    <p>Recovery Manager: Release 11.2.0.2.0 - Production on Fri Feb 18 16:10:16 2011</p>
-                    <p>&nbsp;</p>
-                    <p>Copyright (c) 1982, 2009, Oracle and/or its affiliates. &nbsp;All rights reserved.</p>
-                    <p>&nbsp;</p>
-                    <p>connected to target database: OPTIMUS (DBID=379668842)</p>
-                    <p>connected to auxiliary database: PRIME (not mounted)</p>
-                    <p>/*</p>
+                    <pre class="wp-block-code"><code>
+rman target / auxiliary sys/......@prime1
+
+Recovery Manager: Release 11.2.0.2.0 - Production on Fri Feb 18 16:10:16 2011
+
+Copyright (c) 1982, 2009, Oracle and/or its affiliates. All rights reserved.
+
+connected to target database: OPTIMUS (DBID=379668842)
+connected to auxiliary database: PRIME (not mounted)
+</code></pre>
 
                     <pi>18. Delete the database files from ASM +DATA diskgroup using ASMCMD utility:</pi>
                     <pre class="wp-block-code"><code> 
@@ -1055,197 +1054,198 @@ SEQUENCE# THREAD#       APPLIED
 6 rows selected.
 </code></pre>
                     <p>which shows YES on archive log applied column.</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <p>&nbsp;</p>
-                    <ol start="20">
-                        <li>With above configuration inplace the data guard is setup and working. The next step is to bring the standby database under the control of the cluster. For this on the standby instance create a pfile from the spfile that was created
-                            during the duplication process.</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; create pfile='/home/oracle/stdbypfile.ora' from spfile;</p>
-                    <p>&nbsp;</p>
-                    <ol start="21">
-                        <li>Edit the pfile and remove any references to primary db (optimus) except db_name this must be same as primary db. Set instance specific instance_number, undo_tablespace, fal_client and thread. pfile content after the edit is given
-                            below
-                        </li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>prime1.__db_cache_size=373293056</p>
-                    <p>prime1.__java_pool_size=4194304</p>
-                    <p>prime1.__large_pool_size=4194304</p>
-                    <p>prime1.__oracle_base='/opt/app/oracle'#ORACLE_BASE set from environment</p>
-                    <p>prime1.__pga_aggregate_target=209715200</p>
-                    <p>prime1.__sga_target=633339904</p>
-                    <p>prime1.__shared_io_pool_size=0</p>
-                    <p>prime1.__shared_pool_size=239075328</p>
-                    <p>prime1.__streams_pool_size=0</p>
-                    <p>prime2.__db_cache_size=373293056</p>
-                    <p>prime2.__java_pool_size=4194304</p>
-                    <p>prime2.__large_pool_size=4194304</p>
-                    <p>prime2.__oracle_base='/opt/app/oracle'#ORACLE_BASE set from environment</p>
-                    <p>prime2.__pga_aggregate_target=209715200</p>
-                    <p>prime2.__sga_target=633339904</p>
-                    <p>prime2.__shared_io_pool_size=0</p>
-                    <p>prime2.__shared_pool_size=239075328</p>
-                    <p>prime2.__streams_pool_size=0</p>
-                    <p>*.audit_file_dest='/opt/app/oracle/admin/prime/adump'</p>
-                    <p>*.audit_trail='db'</p>
-                    <p>*.cluster_database=true</p>
-                    <p>*.compatible='11.2.0.0.0'</p>
-                    <p>*.control_files='+DATA/prime/controlfile/current.257.743447507','+FRA/prime/controlfile/current.257.743447507'#Set by RMAN</p>
-                    <p>*.db_block_size=8192</p>
-                    <p>*.db_create_file_dest='+DATA'</p>
-                    <p>*.db_domain='domain.net'</p>
-                    <p>*.db_file_name_convert='+DATA/optimus','+DATA/prime'</p>
-                    <p>*.db_name='optimus'</p>
-                    <p>*.db_recovery_file_dest='+FRA'</p>
-                    <p>*.db_recovery_file_dest_size=9470738432</p>
-                    <p>*.db_unique_name='prime'</p>
-                    <p>*.diagnostic_dest='/opt/app/oracle'</p>
-                    <p>*.dispatchers='(PROTOCOL=TCP) (SERVICE=primeXDB)'</p>
-                    <p>prime1.fal_client='RAC11G2S1'</p>
-                    <p>rac1g2s22.fal_client='RAC11G2S2'</p>
-                    <p>*.fal_server='RAC11G21','RAC11G22'</p>
-                    <p>prime1.instance_number=1</p>
-                    <p>prime2.instance_number=2</p>
-                    <p>*.log_archive_config='dg_config=(optimus,prime)'</p>
-                    <p>*.log_archive_dest_2='service=OPTIMUS LGWR ASYNC NOAFFIRM</p>
-                    <p>max_failure=10 max_connections=5 reopen=180</p>
-                    <p>valid_for=(online_logfiles,primary_role) db_unique_name=optimus'</p>
-                    <p>*.log_archive_dest_1='location=use_db_recovery_file_dest</p>
-                    <p>valid_for=(all_logfiles,all_roles) db_unique_name=prime'</p>
-                    <p>*.log_archive_dest_state_2='enable'</p>
-                    <p>*.log_archive_dest_state_1='enable'</p>
-                    <p>*.log_archive_format='%t_%s_%r.dbf'</p>
-                    <p>*.log_archive_max_processes=5</p>
-                    <p>*.log_file_name_convert='+FRA/optimus','+FRA/prime','+DATA/optimus','+DATA/prime'</p>
-                    <p>*.open_cursors=300</p>
-                    <p>*.pga_aggregate_target=209715200</p>
-                    <p>*.processes=150</p>
-                    <p>*.remote_listener='racb-scan:1521'</p>
-                    <p>*.remote_login_passwordfile='exclusive'</p>
-                    <p>*.sga_target=631242752</p>
-                    <p>*.standby_file_management='AUTO'</p>
-                    <p>prime1.undo_tablespace='UNDOTBS1'</p>
-                    <p>prime2.undo_tablespace='UNDOTBS2'</p>
-                    <p>prime1.thread=1</p>
-                    <p>prime2.thread=2</p>
-                    <p>&nbsp;</p>
-                    <p><strong>--Eski pfile dosyasına (~/primeinitpfile)&nbsp; /home/oracle/stdbypfile.ora i&ccedil;erisindeki "controlfile" satırı koyulur.. ********* PRIME : apply 2. node !!!!!!!!</strong></p>
-                    <ol start="22">
-                        <li>Shutdown the database and startup mount and create a spfile with +ASM diskgroup as the location</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>--SQL&gt;alter database recover managed standby database cancel;</p>
-                    <p>SQL&gt;shu immediate;</p>
-                    <p>SQL&gt;startup mount pfile='/home/oracle/stdbypfile.ora';</p>
-                    <p>--startup mount pfile='/home/oracle/primeinitpfile';</p>
-                    <p>--startup mount pfile='/home/oracle/admracinitpfile';</p>
-                    <p>&nbsp;</p>
-                    <p>ORACLE instance started.</p>
-                    <p>&nbsp;</p>
-                    <p>Total System Global Area &nbsp;630501376 bytes</p>
-                    <p>Fixed Size &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;2229120 bytes</p>
-                    <p>Variable Size &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 247467136 bytes</p>
-                    <p>Database Buffers &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;373293056 bytes</p>
-                    <p>Redo Buffers &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;7512064 bytes</p>
-                    <p>Database mounted.</p>
-                    <p>&nbsp;</p>
-                    <p>Aşağıdaki komut &ccedil;alıştırılmadan &ouml;nce +DATASSD/prime/parameterfile dizini altına bak</p>
-                    <p>[oracle@orclis1 ~]$ asm</p>
-                    <p>[oracle@orclis1 ~]$ asmcmd ls +DATASSD/prime/parameterfile</p>
-                    <p>yok</p>
-                    <p>SQL&gt; create spfile='+DATASSD' from pfile='/home/oracle/stdbypfile.ora';</p>
-                    <p>--create spfile='+DATASSD' from pfile='/home/oracle/primeinitpfile';</p>
-                    <p>File created.</p>
-                    <p>[oracle@orclis1 ~]$ asmcmd ls +DATASSD/prime/parameterfile</p>
-                    <p>&nbsp;</p>
-                    <p>spfile.287.850861069</p>
-                    <p>&nbsp;</p>
-                    <p>The new file created will be used as spfile</p>
-                    <p>spfile.287.850861069</p>
-                    <p>spfile='+DATASSD/prime/parameterfile/spfile.287.850861069'</p>
-                    <p>SQL&gt; shutdown immediate;</p>
-                    <p>&nbsp;</p>
-                    <ol start="23">
-                        <li>Create pfile file on each node's oracle home ($ORACLE_HOME/dbs) that points to the spfile by adding one line that referes to the spfile</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>orclis1:</p>
-                    <p>vi initprime1.ora</p>
-                    <p>spfile='+DATASSD/prime/parameterfile/spfile.287.850861069'</p>
-                    <p>&nbsp;</p>
-                    <p>Orclis2</p>
-                    <p>vi initprime2.ora</p>
-                    <p>spfile='+DATASSD/prime/parameterfile/spfile.287.850861069'</p>
-                    <p>spfile='+DATASSD/admrac/parameterfile/spfile.258.833668493'</p>
-                    <p>&nbsp;</p>
+                    <p></p>
+
+
+                    <pi>21. With above configuration inplace the data guard is setup and working. The next step is to bring the standby database under the control of the cluster. For this on the standby instance create a pfile from the spfile that was created
+                        during the duplication process.</pi>
+                    <pre class="wp-block-code"><code>
+SQL> create pfile='/home/oracle/stdbypfile.ora' from spfile;
+                </code></pre>
+
+                    <pi>22. Edit the pfile and remove any references to primary db (optimus) except db_name this must be same as primary db. Set instance specific instance_number, undo_tablespace, fal_client and thread. pfile content after the edit is given
+                        below
+                    </pi>
+                    <pre class="wp-block-code"><code>
+prime1.__db_cache_size=373293056
+prime1.__java_pool_size=4194304
+prime1.__large_pool_size=4194304
+prime1.__oracle_base='/opt/app/oracle'#ORACLE_BASE set from environment
+prime1.__pga_aggregate_target=209715200
+prime1.__sga_target=633339904
+prime1.__shared_io_pool_size=0
+prime1.__shared_pool_size=239075328
+prime1.__streams_pool_size=0
+prime2.__db_cache_size=373293056
+prime2.__java_pool_size=4194304
+prime2.__large_pool_size=4194304
+prime2.__oracle_base='/opt/app/oracle'#ORACLE_BASE set from environment
+prime2.__pga_aggregate_target=209715200
+prime2.__sga_target=633339904
+prime2.__shared_io_pool_size=0
+prime2.__shared_pool_size=239075328
+prime2.__streams_pool_size=0
+*.audit_file_dest='/opt/app/oracle/admin/prime/adump'
+*.audit_trail='db'
+*.cluster_database=true
+*.compatible='11.2.0.0.0'
+*.control_files='+DATA/prime/controlfile/current.257.743447507','+FRA/prime/controlfile/current.257.743447507'#Set by RMAN
+*.db_block_size=8192
+*.db_create_file_dest='+DATA'
+*.db_domain='domain.net'
+*.db_file_name_convert='+DATA/optimus','+DATA/prime'
+*.db_name='optimus'
+*.db_recovery_file_dest='+FRA'
+*.db_recovery_file_dest_size=9470738432
+*.db_unique_name='prime'
+*.diagnostic_dest='/opt/app/oracle'
+*.dispatchers='(PROTOCOL=TCP) (SERVICE=primeXDB)'
+prime1.fal_client='RAC11G2S1'
+rac1g2s22.fal_client='RAC11G2S2'
+*.fal_server='RAC11G21','RAC11G22'
+prime1.instance_number=1
+prime2.instance_number=2
+*.log_archive_config='dg_config=(optimus,prime)'
+*.log_archive_dest_2='service=OPTIMUS LGWR ASYNC NOAFFIRM
+max_failure=10 max_connections=5 reopen=180
+valid_for=(online_logfiles,primary_role) db_unique_name=optimus'
+*.log_archive_dest_1='location=use_db_recovery_file_dest
+valid_for=(all_logfiles,all_roles) db_unique_name=prime'
+*.log_archive_dest_state_2='enable'
+*.log_archive_dest_state_1='enable'
+*.log_archive_format='%t_%s_%r.dbf'
+*.log_archive_max_processes=5
+*.log_file_name_convert='+FRA/optimus','+FRA/prime','+DATA/optimus','+DATA/prime'
+*.open_cursors=300
+*.pga_aggregate_target=209715200
+*.processes=150
+*.remote_listener='racb-scan:1521'
+*.remote_login_passwordfile='exclusive'
+*.sga_target=631242752
+*.standby_file_management='AUTO'
+prime1.undo_tablespace='UNDOTBS1'
+prime2.undo_tablespace='UNDOTBS2'
+prime1.thread=1
+prime2.thread=2
+    </code></pre>
+                    <p>
+                        <u> Insert line which contains "controlfile" row in /home/oracle/stdbypfile.ora to (~/primeinitpfile) ********* PRIME : apply 2. node !!!!!!!!</u>
+                    </p>
+
+                    <pi>23. Shutdown the database and startup mount and create a spfile with +ASM diskgroup as the location</pi>
+                    <pre class="wp-block-code"><code>
+--SQL> alter database recover managed standby database cancel;
+SQL> shu immediate;
+SQL> startup mount pfile='/home/oracle/stdbypfile.ora';
+
+ORACLE instance started.
+
+Total System Global Area 630501376 bytes
+Fixed Size 2229120 bytes
+Variable Size  247467136 bytes
+Database Buffers 373293056 bytes
+Redo Buffers 7512064 bytes
+Database mounted.
+</code></pre>
+                    <p>Before running the following command check the files under +DATASSD/prime/parameterfile folder</p>
+                    <pre class="wp-block-code"><code>
+[oracle@orclis1 ~]$ asm
+[oracle@orclis1 ~]$ asmcmd ls +DATASSD/prime/parameterfile
+
+        in case it doesn't exist 
+
+SQL> create spfile='+DATASSD' from pfile='/home/oracle/stdbypfile.ora';
+File created.
+[oracle@orclis1 ~]$ asmcmd ls +DATASSD/prime/parameterfile
+
+spfile.287.850861069
+</code></pre>
+                    <p>The new file created (spfile.287.850861069) will be used as spfile</p>
+                    <pre class="wp-block-code"><code>
+spfile='+DATASSD/prime/parameterfile/spfile.287.850861069'
+SQL> shutdown immediate;
+</code></pre>
+
+
+                    <pi>24. Create pfile file on each node's oracle home ($ORACLE_HOME/dbs) that points to the spfile by adding one line that referes to the spfile</pi>
+                    <pre class="wp-block-code"><code>
+orclis1:
+--------
+vi initprime1.ora
+spfile='+DATASSD/prime/parameterfile/spfile.287.850861069'
+
+orclis2:
+-------
+vi initprime2.ora
+spfile='+DATASSD/prime/parameterfile/spfile.287.850861069'
+spfile='+DATASSD/admrac/parameterfile/spfile.258.833668493'
+</code></pre>
                     <p>Above is for orclis1, create initprime2.ora on orclis2.</p>
-                    <p>&nbsp;</p>
-                    <ol start="24">
-                        <li>Once above pfiles are created remove the spfile in $ORACLE_HOME/dbs that was created as part of the duplication. --&gt;???</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <ol start="25">
-                        <li>Before bringing the standby instance under cluster control check it could be started on all other nodes with their respective instances. In this case orclis2 since this is a two node rac, export ORACLE_SID to prime2 and start the
-                            instance in mount mode. Resolve any issues (init parameter related) before proceeding to the next step)</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <ol start="26">
-                        <li>To add the database and instances to the cluster configuration run (not needed if there was already a cluster and you're just resyncronizing it)</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>srvctl add database -d prime -o $ORACLE_HOME -m local -p "+DATASSD/prime/parameterfile/spfile.287.850861069" -n optimus -r physical_standby -s mount</p>
-                    <p>srvctl add instance -d prime -i prime1 -n orclis1</p>
-                    <p>srvctl add instance -d prime -i prime2 -n orclis2</p>
-                    <p>&nbsp;</p>
+                    <p></p>
+
+                    <pi>25. Once above pfiles are created remove the spfile in $ORACLE_HOME/dbs that was created as part of the duplication. -->???</pi>
+
+                    <p></p>
+
+                    <pi>26. Before bringing the standby instance under cluster control check it could be started on all other nodes with their respective instances. In this case orclis2 since this is a two node rac, export ORACLE_SID to prime2 and start the
+                        instance in mount mode. Resolve any issues (init parameter related) before proceeding to the next step)</pi>
+
+                    <p></p>
+
+                    <pi>27. To add the database and instances to the cluster configuration run (not needed if there was already a cluster and you're just resyncronizing it)</pi>
+                    <pre class="wp-block-code"><code>
+$ srvctl add database -d prime -o $ORACLE_HOME -m local -p "+DATASSD/prime/parameterfile/spfile.287.850861069" -n optimus -r physical_standby -s mount
+$ srvctl add instance -d prime -i prime1 -n orclis1
+$ srvctl add instance -d prime -i prime2 -n orclis2
+</code></pre>
                     <p>Without the "-s mount" the standby database would be started in open (read only) mode by default (both R1 and R2). With 11g (both R1 and R2) it is possible to apply redo while the database is open in read only mode. But this requires
-                        active dataguard license and setting the default startup mode to mount prevents such activity from&nbsp; happenning when active dataguard is not licensed. On 11gR1 db instances could be made dependent on that node's asm instance
-                        but this option is deprecated in 11gr2</p>
-                    <p>&nbsp;</p>
+                        active dataguard license and setting the default startup mode to mount prevents such activity from happenning when active dataguard is not licensed. On 11gR1 db instances could be made dependent on that node's asm instance but
+                        this option is deprecated in 11gr2</p>
+
                     <p>$CRS_HOME/bin/srvctl modify instance -d prime -i prime1 -s +ASM1 -s option has been deprecated and will be ignored.</p>
-                    <p>&nbsp;</p>
-                    <p>srvctl config database -d prime</p>
-                    <p>Database unique name: prime</p>
-                    <p>Database name: optimus</p>
-                    <p>Oracle home: /oracle/product/11.2.0.3/db</p>
-                    <p>Oracle user: oracle</p>
-                    <p>Spfile: +DATASSD/prime/parameterfile/spfile.274.824598353</p>
-                    <p>Domain:</p>
-                    <p>Start options: mount</p>
-                    <p>Stop options: immediate</p>
-                    <p>Database role: PHYSICAL_STANDBY</p>
-                    <p>Management policy: AUTOMATIC</p>
-                    <p>Server pools: prime</p>
-                    <p>Database instances: prime1,prime2</p>
-                    <p>Disk Groups: DATASAS,DATASSD,FRA</p>
-                    <p>Mount point paths:</p>
-                    <p>Services: optimus</p>
-                    <p>Type: RAC</p>
-                    <p>Database is administrator managed</p>
-                    <p>&nbsp;</p>
-                    <ol start="27">
-                        <li>Test the configuration with starting the entire standby database</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>srvctl status database -d prime</p>
-                    <p>Instance prime1 is not running on node orclis1</p>
-                    <p>Instance prime2 is not running on node orclis2</p>
-                    <p>&nbsp;</p>
-                    <p>srvctl modify database -d prime -p +DATASSD/prime/parameterfile/spfile.287.850861069</p>
-                    <p>srvctl modify database -d admrac -p +datassd/admrac/parameterfile/spfile.257.833673189</p>
-                    <p>srvctl config database -d prime</p>
-                    <p>srvctl start database -d prime</p>
-                    <p>&nbsp;</p>
-                    <p>srvctl status database -d prime</p>
-                    <p>Instance prime1 is running on node orclis1</p>
-                    <p>Instance prime2 is running on node orclis2</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>
+$ srvctl config database -d prime
+
+Database unique name: prime
+Database name: optimus
+Oracle home: /oracle/product/11.2.0.3/db
+Oracle user: oracle
+Spfile: +DATASSD/prime/parameterfile/spfile.274.824598353
+Domain:
+Start options: mount
+Stop options: immediate
+Database role: PHYSICAL_STANDBY
+Management policy: AUTOMATIC
+Server pools: prime
+Database instances: prime1,prime2
+Disk Groups: DATASAS,DATASSD,FRA
+Mount point paths:
+Services: optimus
+Type: RAC
+Database is administrator managed
+</code></pre>
+
+                    <pi>28. Test the configuration with starting the entire standby database</pi>
+                    <pre class="wp-block-code"><code>
+$ srvctl status database -d prime
+
+Instance prime1 is not running on node orclis1
+Instance prime2 is not running on node orclis2
+
+$ srvctl modify database -d prime -p +DATASSD/prime/parameterfile/spfile.287.850861069
+
+srvctl config database -d prime
+srvctl start database -d prime
+
+$ srvctl status database -d prime
+
+Instance prime1 is running on node orclis1
+Instance prime2 is running on node orclis2
+                </code></pre>
                     <p>Once the database is started as a cluster resource the asm dependencies are automatically added as well as the local_listener values which were reset during the duplication.</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>crsctl stat res ora.prime.db -p</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>NAME=ora.prime.db</p>
                     <p>TYPE=ora.database.type</p>
                     <p>..</p>
@@ -1256,57 +1256,57 @@ SEQUENCE# THREAD#       APPLIED
                     <p>STATE_CHANGE_TEMPLATE=</p>
                     <p>STOP_DEPENDENCIES=hard(intermediate:ora.asm,shutdown:ora.DATA.dg,shutdown:ora.FRA.dg)</p>
                     <p>..</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; show parameter local</p>
-                    <p>&nbsp;</p>
-                    <p>NAME &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;TYPE &nbsp; &nbsp; &nbsp; &nbsp;VALUE</p>
-                    <p>--------------- ---------- ------------------------------</p>
-                    <p>local_listener &nbsp;string</p>
-                    <p>(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP(HOST=172.30.33.51)(PORT=3000))))</p>
-                    <p>&nbsp;</p>
-                    <ol start="28">
-                        <li>Start the recovery process on one of the standby instances.</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter database recover managed standby database using current logfile disconnect;</p>
-                    <p>&nbsp;</p>
-                    <p>srvctl add service -d prime -s optimus -r prime1,prime2</p>
-                    <p>&nbsp;</p>
-                    <p>ReadOnly Mode'a ge&ccedil;mek i&ccedil;in :</p>
-                    <p>------------------------------</p>
-                    <p>SQL&gt;alter database recover managed standby database cancel; --apply kesilir..</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt;alter database open; (her iki node da da)</p>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt;alter database recover managed standby database disconnect;</p>
-                    <p>&nbsp;</p>
-                    <p>Kontrol etmek i&ccedil;in her iki tarfta da (Primary-Standby)</p>
-                    <p>select max(sequence#),thread# from v$log_history group by thread#;</p>
-                    <p>&nbsp;</p>
+                    <pre class="wp-block-code"><code>
+SQL>  show parameter local
+
+NAME            TYPE        VALUE
+--------------- ---------- ------------------------------
+local_listener  string     (DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP(HOST=172.30.33.51)(PORT=3000))))
+                    </code></pre>
+                    <p></p>
+
+                    <pi>29. Start the recovery process on one of the standby instances.</pi>
+                    <pre class="wp-block-code"><code>
+SQL>  alter database recover managed standby database using current logfile disconnect;
+
+$ srvctl add service -d prime -s optimus -r prime1,prime2
+
+        To validate ReadOnly Mode transition :
+
+SQL> alter database recover managed standby database cancel; --apply stopped..
+
+SQL> alter database open; (on both nodes)
+
+SQL> alter database recover managed standby database disconnect;
+</code></pre>
+                    <p>To validate the setup run below query on both ends (Primary-Standby)</p>
+                    <pre class="wp-block-code"><code>
+SQL>  select max(sequence#),thread# from v$log_history group by thread#;
+</code></pre>
+
                     <p>This concludes the setup of RAC-RAC data guard.</p>
-                    <p>&nbsp;</p>
-                    <ol start="29">
-                        <li>To make sure archive logs don't get deleted on primary without being applied on standby set the log deletion policy to applied on standby. For this at least one log archive locations must be mandatory.</li>
-                    </ol>
-                    <p>&nbsp;</p>
-                    <p>SQL&gt; alter system set log_archive_dest_2='service=PRIME LGWR ASYNC NOAFFIRM max_failure=10 max_connections=5 reopen=180 valid_for=(online_logfiles,primary_role) db_unique_name=prime mandatory' scope=both sid='*';</p>
-                    <p>&nbsp;</p>
+                    <p></p>
+
+                    <pi>30. To make sure archive logs don't get deleted on primary without being applied on standby set the log deletion policy to applied on standby. For this at least one log archive locations must be mandatory.</pi>
+
+                    <p>SQL> alter system set log_archive_dest_2='service=PRIME LGWR ASYNC NOAFFIRM max_failure=10 max_connections=5 reopen=180 valid_for=(online_logfiles,primary_role) db_unique_name=prime mandatory' scope=both sid='*';</p>
+                    <p></p>
                     <p>Usign rman change the archive log deletion policy.</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>RMAN&gt; CONFIGURE ARCHIVELOG DELETION POLICY TO APPLIED ON STANDBY;</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>old RMAN configuration parameters:</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>CONFIGURE ARCHIVELOG DELETION POLICY TO NONE;</p>
                     <p>new RMAN configuration parameters:</p>
                     <p>CONFIGURE ARCHIVELOG DELETION POLICY TO APPLIED ON STANDBY;</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>new RMAN configuration parameters are successfully stored</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>If it is configured APPLIED ON ALL STANDBY then archived redo log files are eligible for deletion after being applied or consumed on all remote destinations, whether mandatory or not.</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>With mandatory destination inplace if the standby is not up and accepting redo when the primary starts following error</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>PING[ARC1]: Heartbeat failed to connect to standby 'PRIME'. Error is 12543.</p>
                     <p>Archived Log entry 202 added for thread 1 sequence 80 ID 0x16a13366 dest 10:</p>
                     <p>ARCH: Archival stopped, error occurred. Will continue retrying</p>
@@ -1317,26 +1317,26 @@ SEQUENCE# THREAD#       APPLIED
                     <p>'+DATA/optimus/onlinelog/group_2.262.740770163'</p>
                     <p>ORA-00312: online log 2 thread 1:</p>
                     <p>'+FRA/optimus/onlinelog/group_2.258.740770163'</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>and any alter system switch logfile commands will hang.</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>Distributing redo load</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>It is possible to distribute the redo load among all standby instnaces. In this case instead of sending the redo from all primary instance to one standby instance each primary instance will send its redo to corresponding standby instance.
                         This configuration is ideal in a symmetric data guard environment and one signle standby instance cannot keep up with all the redo generated. To do this set primary instance specific log_archive_dest values</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>alter system set log_archive_dest_2='service=prime1 LGWR ASYNC NOAFFIRM max_failure=10 max_connections=5 reopen=180 valid_for=(online_logfiles,primary_role) db_unique_name=prime mandatory' scope=spfile sid='optimus1';</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>alter system set log_archive_dest_2='service=prime2 LGWR ASYNC NOAFFIRM max_failure=10 max_connections=5 reopen=180 valid_for=(online_logfiles,primary_role) db_unique_name=prime mandatory' scope=spfile sid='optimus2';</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>Here optimus1 will send its redo to prime1 and optimus2 will send to prime2.</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>But there can only be one apply instance.</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>Otherway around, sending all primary redo once standby instance gives more flexibility than above one-to-one redo transport configuration.</p>
                     <p>In this case if the current standby apply instance need to be shutdown all that is required is stop the apply service on that instance and</p>
                     <p>start in another instance. Since there's no instance specific redo transport configuration no additional steps are required. (provided the TNS entry has addressed for all standby instances similar to prime TNS entry above).</p>
-                    <p>&nbsp;</p>
+                    <p></p>
                     <p>Related Post</p>
                     <p>11gR2 Standalone Data Guard (with ASM and Role Separation)</p>
                     <p>Data Guard Broker for 11gR2 RAC</p>
