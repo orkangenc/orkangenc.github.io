@@ -114,17 +114,81 @@
             <div class="site-content">
                 <div class="post-body">
                     <h2>This page contains solutions/answers to some typical Oracle DBA queries. We will enhance the content in time. Please note the content is for 11gR2.</h2>
-                    <u><h3><a href="#DDLDDDLG">DDL / Dependent DDL Generation</a></h3></u>
+                    <u><h3><a href="#DDLDDDLG">Script to generate a duplicate copy of an instance</a></h3></u>
 
-                    <p>You can use the built-in function(s) </p>
+                    <p>Please note that you need to modify the script according to your ASM settings and other relevant configurations.</p>
                     <pre class="wp-block-code" id="DDLDDDLG"><code>
-SQL> select dbms_metadata.get[_dependent]_ddl(Object_Type, Object_Name, SCHEMA_NAME) from dual;
-------------------------------------------------------------------------------
-SQL> select dbms_metadata.get_ddl('FUNCTION',Function_Name,SCHEMA_NAME) from dual;
-SQL> select dbms_metadata.get_dependent_ddl('TRIGGER',Function_Name,SCHEMA_NAME) from dual;
+export NLS_LANG=american_america.al32utf8
+export NLS_DATE_FORMAT='Mon DD YYYY HH24:MI:SS'
+export PATH=/oracle/product/11.2.0.3/db/bin:$PATH
+export ORACLE_UNQNAME=dss
+
+export ORACLE_HOME=/oragrid/product/11.2.0.3/grid
+export ORACLE_SID=+ASM2
+export PATH=/oragrid/product/11.2.0.3/grid/bin:$PATH
+asmcmd rm +DATAT1/DSS/ARCHIVELOG/*/*
+###asmcmd rm +DATAT1/DSS/CONTROLFILE/*
+asmcmd rm +DATAT1/DSS/DATAFILE/*
+asmcmd rm +DATAT1/DSS/ONLINELOG/*
+asmcmd rm +DATAT1/DSS/TEMPFILE/*
+asmcmd rm +DATAT1/DSS/FLASHBACK/*
+lsnrctl start LISTENER_DSS
+export ORACLE_HOME=/oracle/product/11.2.0.3/db
+export ORACLE_SID=dss
+export ORACLE_UNQNAME=dss
+sqlplus / as sysdba &lt;&lt;eof
+startup nomount;
+eof
+rman &lt;&lt;EOF
+connect target sys/****@optimus2
+connect auxiliary sys/****@dss
+run {
+allocate channel prm1 type disk;
+allocate channel prm2 type disk;
+allocate channel prm3 type disk;
+allocate channel prm4 type disk;
+allocate channel prm5 type disk;
+allocate channel prm6 type disk;
+allocate channel prm7 type disk;
+allocate channel prm8 type disk;
+allocate auxiliary channel ds1 type disk;
+allocate auxiliary channel ds2 type disk;
+allocate auxiliary channel ds3 type disk;
+allocate auxiliary channel ds4 type disk;
+allocate auxiliary channel ds5 type disk;
+allocate auxiliary channel ds6 type disk;
+allocate auxiliary channel ds7 type disk;
+allocate auxiliary channel ds8 type disk;
+duplicate target database to dss from active database;
+release channel prm1;
+release channel prm2;
+release channel prm3;
+release channel prm4;
+release channel prm5;
+release channel prm6;
+release channel prm7;
+release channel prm8;
+}
+exit
+EOF
+RC=$?
+ms=""
+if [ $RC -ne "0" ]; then
+ms="DSS Active Duplicate <b><font color=\"red\"> FAILED</font></b>"
+else
+  ms="DSS Active Duplicate SUCCESS"
+fi
+RDBMSUSERPROFILE=/home/oracle/.profile.optimus
+. $RDBMSUSERPROFILE
+sqlplus / as sysdba << EOF
+exec SYS.UTL_MAIL.SEND('address@company.com','another@company.com' ,NULL,NULL,'Duplication Task Status','$ms','text/html; charset=us-ascii',NULL)
+EOF
+
                     </code></pre>
                     <p>&nbsp;</p>
-
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
+                    <p>&nbsp;</p>
                     <u><h3><a href="#DTCCS">DateTime conversion cheat sheat</a></h3></u>
 
                     <p>Some basic conversion formats for daily usage. Don't forget to add 'from dual' when running the query standalone</p>
@@ -293,11 +357,11 @@ DB_UNIQUE_NAME=optimus
 
 
                 <div class="pagination flex-row " id="Pages ">
-                    <a href="index-3.html"><i class="fas fa-chevron-left "></i></a>
-                    <a href="#" class="pages ">1</a>
+                    <a href="index.html"><i class="fas fa-chevron-left "></i></a>
+                    <a href="index.html" class="pages ">1</a>
                     <a href="index-2.html" class="pages ">2</a>
                     <a href="index-3.html" class="pages ">3</a>
-                    <a href="index-2.html"><i class="fas fa-chevron-right "></i></a>
+                    <a href="index-3.html"><i class="fas fa-chevron-right "></i></a>
                 </div>
 
 

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sentinity</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="../../css/all.css">
+
+
+    <!-- --------- Owl-Carousel ------------------->
+    <link rel="stylesheet" href="../../css/owl.carousel.min.css">
+    <link rel="stylesheet" href="../../css/owl.theme.default.min.css">
+
+    <!-- ------------ AOS Library ------------------------- -->
+    <link rel="stylesheet" href="./css/aos.css">
+
+    <!-- Custom Style   -->
+    <link rel="stylesheet" href="../../css/Style.css">
+    <link rel="shortcut icon" href="../../assets/favicon.png" type="image/png" />
+</head>
+<style type="text/css">
+    code {
+        padding: 3px 6px
+    }
+    
+    code,
+    pre {
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+        border-radius: 2px;
+        background: rgba(233, 235, 239, .5);
+    }
+    
+    code:focus,
+    pre:focus {
+        outline: none
+    }
+    
+    pre {
+        overflow: auto;
+        padding: 15px 20px
+    }
+    
+    pre code {
+        padding: 0;
+        background: transparent
+    }
+    
+    .wp-block-code code {
+        white-space: pre-wrap;
+        overflow-wrap: break-word
+    }
+</style>
+
+<body>
+
+    <!-- ----------------------------  Navigation ---------------------------------------------- -->
+
+    <nav class="nav">
+        <div class="nav-menu flex-row">
+            <div class="nav-brand">
+                <a href="/index.html" class="text-gray">Sentinity</a>
+            </div>
+            <div class="toggle-collapse">
+                <div class="toggle-icons">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+            <div>
+                <ul class="nav-items">
+                    <li class="nav-link">
+                        <a href="/index.html">Home</a>
+                    </li>
+                    <!--
+                    <li class="nav-link">
+                        <a href="#">Category</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Archive</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Pages</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Contact Us</a>
+                    </li>
+                    -->
+                </ul>
+            </div>
+            <div class="social text-gray">
+                <a href=""><i class="fab fa-facebook-f"></i></a>
+                <a href=""><i class="fab fa-instagram"></i></a>
+                <a href=""><i class="fab fa-twitter"></i></a>
+                <a href=""><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ------------x---------------  Navigation --------------------------x------------------- -->
+
+    <!----------------------------- Main Site Section ------------------------------>
+
+    <main>
+
+        <!------------------------ Site Title ---------------------->
+
+
+        <!------------x----------- Site Title ----------x----------->
+
+
+        <!-- ---------------------- Site Content -------------------------->
+
+        <section class="container">
+            <div class="site-content">
+                <div class="post-body">
+                    <u><h2>How to change Cluster Interconnect Adapter IP</h2></u>
+                    <p>Reference Documents</p>
+                    <pre class="wp-block-code"><code>
+    How to Modify Public Network Information including VIP in Oracle Clusterware [ID 276434.1]
+    How to Modify Private Network Information in Oracle Clusterware [ID 283684.1]
+    10gR2, 11gR1 and 11gR2 Oracle Clusterware (CRS / Grid Infrastructure) & RAC Command (crsctl, srvctl, cluvfy etc) Syntax and Reference [ID 1332452.1]
+    https://tuannguyenoracledba.blogspot.com/2011/12/how-to-change-interconnectpublic.html
+</code></pre>
+                    <p>This is a step by step execution and personal experience. This document comes with all activities including errors and failures. So it is up to you to extract your version out of it. Please make sure you have a look at the reference
+                        documents. I believe they are the best of their class during the time of my requirement. Please also note that this procedure is required only in the case of some hardware change so /etc/hosts change for IP is assumed to be done
+                        by system admins</p>
+                    <pre class="wp-block-code"><code>
+    [root@orclis1 ~]# crsctl check cluster -all
+    **************************************************************
+    orclis1:
+    CRS-4535: Cannot communicate with Cluster Ready Services
+    CRS-4529: Cluster Synchronization Services is online
+    CRS-4534: Cannot communicate with Event Manager
+    **************************************************************
+    orclis2:
+    CRS-4535: Cannot communicate with Cluster Ready Services
+    CRS-4530: Communications failure contacting Cluster Synchronization Services daemon
+    CRS-4534: Cannot communicate with Event Manager
+    **************************************************************
+    
+    # crsctl stop crs -f
+    # crsctl start crs
+    
+    [root@orclis1 orclis1]# crsctl check crs
+    CRS-4638: Oracle High Availability Services is online
+    CRS-4537: Cluster Ready Services is online
+    CRS-4529: Cluster Synchronization Services is online
+    CRS-4533: Event Manager is online
+    
+    [root@orclis1 orclis1]# crsctl check cluster -all
+    **************************************************************
+    orclis1:
+    CRS-4537: Cluster Ready Services is online
+    CRS-4529: Cluster Synchronization Services is online
+    CRS-4533: Event Manager is online
+    **************************************************************
+    orclis2:
+    CRS-4535: Cannot communicate with Cluster Ready Services
+    CRS-4530: Communications failure contacting Cluster Synchronization Services daemon
+    CRS-4534: Cannot communicate with Event Manager
+    **************************************************************
+    
+    
+    [root@orclis1 orclis1]# srvctl config vip -n orclis1
+    VIP exists: /prime1-vip/172.30.33.51/172.30.32.0/255.255.224.0/eth0, hosting node orclis1
+    [root@orclis1 orclis1]# srvctl config vip -n orclis2
+    VIP exists: /prime2-vip/172.30.33.52/172.30.32.0/255.255.224.0/eth0, hosting node orclis2
+    
+    [root@orclis1 orclis1]# oifcfg getif
+    eth0  172.30.32.0  global  public
+    eth1  1.2.3.0  global  cluster_interconnect
+    
+    Sample:
+    --------------
+    % $ORA_CRS_HOME/bin/oifcfg delif -global eth0 
+    % $ORA_CRS_HOME/bin/oifcfg setif -global eth0/10.2.166.0:public
+</code></pre>
+                    <p>syntax: oifcfg setif /: </p>
+
+                    <p> If public network is changed, it may be necessary to change VIP as well, refer to Note 276434.1 for details; for 11gR2, it may be necessary to change SCAN as well, refer to note 972500.1 for details.
+                    </p>
+                    <p>Verify the correct interface subnet is in use by re-running oifcfg with the 'getif' option: </p>
+                    <pre class="wp-block-code"><code>
+    % $ORA_CRS_HOME/bin/oifcfg getif 
+    eth0 10.2.166.0 global public 
+    eth1 192.168.1.0 global cluster_interconnect
+</code></pre>
+                    <p>Logging current status for future reference:</p>
+                    <pre class="wp-block-code"><code>
+    [root@orclis1 orclis1]# oifcfg iflist
+    eth0  172.30.32.0
+    eth1  1.2.3.0
+    eth1  169.254.0.0
+</code></pre>
+                    <p>Check if cluster is running on all nodes!!!!</p>
+                    <pre class="wp-block-code"><code>
+    [root@orclis1 ~]# crsctl check cluster -all
+    **************************************************************
+    orclis1:
+    CRS-4537: Cluster Ready Services is online
+    CRS-4529: Cluster Synchronization Services is online
+    CRS-4533: Event Manager is online
+    **************************************************************
+    orclis2:
+    CRS-4537: Cluster Ready Services is online
+    CRS-4529: Cluster Synchronization Services is online
+    CRS-4533: Event Manager is online
+    **************************************************************
+</code></pre>
+                    <p>Starting with Public interface change:</p>
+                    <pre class="wp-block-code"><code>
+    [root@orclis1 ~]# oifcfg getif
+    eth0  172.30.32.0  global  public
+    eth1  1.2.3.0  global  cluster_interconnect
+    
+    oifcfg delif -global eth0
+    oifcfg setif -global bond0/172.30.32.0:public
+</code></pre>
+                    <p>Continue and finish with Private interface change:</p>
+                    <pre class="wp-block-code"><code>
+    [root@orclis1 ~]# oifcfg getif | grep cluster
+    eth1  1.2.3.0  global  cluster_interconnect
+    
+    # oifcfg delif -global eth1  # Not necessary if version is 11.2.0.3 or higher 
+    # oifcfg setif -global bond1/1.2.3.0:cluster_interconnect
+</code></pre>
+                    <p> Conf. was already there, just were temporarily brought down and working as eth01 ve eth1 up. These eth* configurations would be cleared once reboot. so:</p>
+
+                    <p># shutdown –r now</p>
+
+                    <p> All looked fine at startup, however clients were unable to connect over private and scan ips. Then I recalled that we also need to configure “nodeapps”.</p>
+                    <pre class="wp-block-code"><code>
+    [oracle@orclis1 crs]$ db # switch to DB profile
+    
+    [oracle@orclis1 crs]$ srvctl stop database -d prime  # shut down the cluster
+    [oracle@orclis1 crs]$ srvctl stop nodeapps -n orclis1  # stop nodeapps on both instances
+    [oracle@orclis1 crs]$ srvctl stop nodeapps -n orclis2
+    
+    [oracle@orclis1 crs]$ srvctl status database -d prime  # check 
+    Instance optimus1 is not running on node orclis1
+    Instance optimus2 is not running on node orclis2
+    
+    [oracle@orclis1 crs]$ srvctl status nodeapps -n orclis1  # check 
+    VIP prime1-vip is enabled
+    VIP prime1-vip is not running
+    Network is enabled
+    Network is not running on node: orclis1
+    GSD is disabled
+    GSD is not running on node: orclis1
+    ONS is enabled
+    ONS daemon is not running on node: orclis1
+    
+    [oracle@orclis1 crs]$ srvctl status nodeapps -n orclis2
+    VIP prime2-vip is enabled
+    VIP prime2-vip is not running
+    Network is enabled
+    Network is not running on node: orclis2
+    GSD is disabled
+    GSD is not running on node: orclis2
+    ONS is enabled
+    ONS daemon is not running on node: orclis2
+    
+    [oracle@orclis1 crs]$ srvctl config nodeapps  ? Mevcut durum : eth0 var konfigürasyonda!!!
+    Network exists: 1/172.30.32.0/255.255.224.0/eth0, type static
+    VIP exists: /prime1-vip/172.30.33.51/172.30.32.0/255.255.224.0/eth0, hosting node orclis1
+    VIP exists: /prime2-vip/172.30.33.52/172.30.32.0/255.255.224.0/eth0, hosting node orclis2
+    GSD exists
+    ONS exists: Local port 6100, remote port 6200, EM port 2016
+    
+    # ifconfig -a | egrep ‘(bond0|Mask)’  ? mevcut durumu kontrol
+    bond0     Link encap:Ethernet  HWaddr D8:9D:67:34:37:80
+              inet addr:172.30.33.23  Bcast:172.30.63.255  Mask:255.255.224.0
+              inet6 addr: fe80::da9d:67ff:fe34:3780/64 Scope:Link
+              UP BROADCAST RUNNING MASTER MULTICAST  MTU:1500  Metric:1
+    
+    Genera format:
+    srvctl modify nodeapps -S &lt;network&gt;/&lt;netmask&gt;/&lt;interfaces&gt;
+    
+    # srvctl modify nodeapps -n orclis1 -A prime1-vip/255.255.224.0/bond0
+    # srvctl modify nodeapps -n orclis2 -A prime2-vip/255.255.224.0/bond0
+    
+    #srvctl modify nodeapps -n orclprd1 -A optimus1-vip/255.255.224.0/bond0
+    #srvctl modify nodeapps -n orclprd2 -A optimus2-vip/255.255.224.0/bond0
+    
+    # crsctl stop crs (for aech node)
+    
+    # reboot nodes..
+    
+    After reboot all looks fine, just database was down. Probable Root Cause :  "srvctl stop database -d prime" executed earlier.
+    
+    $ db    # swithch to db profiline
+    $ srvctl start database -d prime
+    $ ps -ef | grep LIS --> LISTENERs are up and running, scattered across nodes
+    
+    
+    [oracle@orclis2 ~]$ lsnrctl start
+    
+    LSNRCTL for Linux: Version 11.2.0.3.0 - Production on 22-JUN-2013 11:52:49
+    
+    Copyright (c) 1991, 2011, Oracle.  All rights reserved.
+    
+    Starting /oracle/product/11.2.0.3/db/bin/tnslsnr: please wait...
+    
+    TNSLSNR for Linux: Version 11.2.0.3.0 - Production
+    System parameter file is /oracle/product/11.2.0.3/db/network/admin/listener.ora
+    Log messages written to /oracle/diag/tnslsnr/orclis2/listener/alert/log.xml
+    Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=172.30.33.52)(PORT=3000)))
+    Listening on: (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=EXTPROC4000)))
+    
+    Connecting to (DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=prime2-vip)(PORT=3000)))
+    STATUS of the LISTENER
+    ------------------------
+    Alias                     LISTENER
+    Version                   TNSLSNR for Linux: Version 11.2.0.3.0 - Production
+    Start Date                22-JUN-2013 11:52:49
+    Uptime                    0 days 0 hr. 0 min. 21 sec
+    Trace Level               off
+    Security                  ON: Local OS Authentication
+    SNMP                      OFF
+    Listener Parameter File   /oracle/product/11.2.0.3/db/network/admin/listener.ora
+    Listener Log File         /oracle/diag/tnslsnr/orclis2/listener/alert/log.xml
+    Listening Endpoints Summary...
+      (DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=172.30.33.52)(PORT=3000)))
+      (DESCRIPTION=(ADDRESS=(PROTOCOL=ipc)(KEY=EXTPROC4000)))
+    Services Summary...
+    Service "optimusXDB" has 1 instance(s).
+      Instance "optimus2", status READY, has 1 handler(s) for this service...
+    Service "prime" has 2 instance(s).
+      Instance "optimus2", status UNKNOWN, has 1 handler(s) for this service...
+      Instance "optimus2", status READY, has 1 handler(s) for this service...
+    Service "test3" has 1 instance(s).
+      Instance "test3", status UNKNOWN, has 1 handler(s) for this service...
+    Service "test4" has 1 instance(s).
+      Instance "test4", status UNKNOWN, has 1 handler(s) for this service...
+    The command completed successfully
+    
+    
+    [root@orclis1 orclis1]# crsctl query css votedisk
+    ##  STATE    File Universal Id                File Name Disk group
+    --  -----    -----------------                --------- ---------
+     1. ONLINE   401f6193a67e4f2cbfcd7048a8125f33 (/dev/mapper/ORCLIS_ASM200.0) [DATA]
+    Located 1 voting disk(s).
+    </code></pre>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- -----------x---------- Site Content -------------x------------>
+
+    </main>
+
+    <!---------------x------------- Main Site Section ---------------x-------------->
+
+
+    <!-- --------------------------- Footer ---------------------------------------- -->
+
+    <footer class="footer">
+        <div class="container">
+            <div class="about-us" data-aos="fade-right" data-aos-delay="200">
+                <h2>Sentinity</h2>
+                <p>.</p>
+            </div>
+            <div class="newsletter" data-aos="fade-right" data-aos-delay="200">
+                <h2>Newsletter</h2>
+                <p>Stay update with our latest</p>
+                <div class="form-element">
+                    <input type="text" placeholder="Email"><span><i class="fas fa-chevron-right"></i></span>
+                </div>
+            </div>
+
+            <div class="follow" data-aos="fade-left" data-aos-delay="200">
+                <h2>Follow us</h2>
+                <p>Let us be Social</p>
+                <div>
+                    <i class="fab fa-facebook-f"></i>
+                    <i class="fab fa-twitter"></i>
+                    <i class="fab fa-instagram"></i>
+                    <i class="fab fa-youtube"></i>
+                </div>
+            </div>
+        </div>
+        <div class="rights flex-row">
+            <h4 class="text-gray">
+                Copyright ©2021 All rights reserved | made by Sentinity
+            </h4>
+        </div>
+        <div class="move-up">
+            <span><i class="fas fa-arrow-circle-up fa-2x"></i></span>
+        </div>
+    </footer>
+
+    <!-- -------------x------------- Footer --------------------x------------------- -->
+
+    <!-- Jquery Library file -->
+    <script src="../../js/Jquery3.4.1.min.js"></script>
+
+    <!-- --------- Owl-Carousel js ------------------->
+    <script src="../../js/owl.carousel.min.js"></script>
+
+    <!-- ------------ AOS js Library  ------------------------- -->
+    <script src="../../js/aos.js"></script>
+
+    <!-- Custom Javascript file -->
+    <script src="../../js/main.js"></script>
+</body>
+
+</html>
