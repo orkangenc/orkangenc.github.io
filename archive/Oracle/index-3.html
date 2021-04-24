@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Sentinity Blog</title>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="../../css/all.css" />
+
+    <!-- --------- Owl-Carousel ------------------->
+    <link rel="stylesheet" href="../../css/owl.carousel.min.css" />
+    <link rel="stylesheet" href="../../css/owl.theme.default.min.css" />
+
+    <!-- ------------ AOS Library ------------------------- -->
+    <link rel="stylesheet" href="../../css/aos.css" />
+
+    <!-- Custom Style   -->
+    <link rel="stylesheet" href="../../css/Style.css" />
+    <link rel="shortcut icon" href="../../assets/favicon.png" type="image/png" />
+    <!-- Google   -->
+    <script data-ad-client="ca-pub-7300787974984213" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+</head>
+<style type="text/css">
+    code {
+        padding: 3px 6px
+    }
+    
+    code,
+    pre {
+        -moz-tab-size: 4;
+        -o-tab-size: 4;
+        tab-size: 4;
+        border-radius: 2px;
+        background: rgba(233, 235, 239, .5);
+    }
+    
+    code:focus,
+    pre:focus {
+        outline: none
+    }
+    
+    pre {
+        overflow: auto;
+        padding: 15px 20px
+    }
+    
+    pre code {
+        padding: 0;
+        background: transparent
+    }
+    
+    .wp-block-code code {
+        white-space: pre-wrap;
+        overflow-wrap: break-word
+    }
+</style>
+
+<body>
+    <!-- ----------------------------  Navigation ---------------------------------------------- -->
+    <nav class="nav">
+        <div class="nav-menu flex-row">
+            <div class="nav-brand">
+                <a href="/index.html" class="text-gray">Sentinity</a>
+            </div>
+            <div class="toggle-collapse">
+                <div class="toggle-icons">
+                    <i class="fas fa-bars"></i>
+                </div>
+            </div>
+            <div>
+                <ul class="nav-items">
+                    <li class="nav-link">
+                        <a href="/index.html">Home</a>
+                    </li>
+                    <!--
+                    <li class="nav-link">
+                        <a href="#">Category</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Archive</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Pages</a>
+                    </li>
+                    <li class="nav-link">
+                        <a href="#">Contact Us</a>
+                    </li>
+                    -->
+                </ul>
+            </div>
+            <div class="social text-gray">
+                <a href=""><i class="fab fa-facebook-f"></i></a>
+                <a href=""><i class="fab fa-instagram"></i></a>
+                <a href=""><i class="fab fa-twitter"></i></a>
+                <a href=""><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ------------x---------------  Navigation --------------------------x------------------- -->
+
+    <!----------------------------- Main Site Section ------------------------------>
+
+    <main>
+
+        <!-- ---------------------- Site Content -------------------------->
+
+
+        <section class="container">
+            <div class="site-content">
+                <div class="post-body">
+                    <h2>This page contains solutions/answers to some typical Oracle DBA queries. We will enhance the content in time. Please note the content is for 11gR2.</h2>
+                    <u><h3><a href="#RAREM">Remove and Re-Install Enterprise Manager</a></h3></u>
+
+                    <p>REMOVE PREVIOUS INSTALLATION</p>
+                    <pre class="wp-block-code" id="RAREM"><code>
+[oracle@orclprd1 ~]$ emca -deconfig dbcontrol db -repos drop -cluster
+STARTED EMCA at May 22, 2013 4:39:36 PM
+EM Configuration Assistant, Version 11.2.0.3.0 Production
+Copyright (c) 2003, 2011, Oracle.  All rights reserved.
+
+Enter the following information:
+Database unique name: db_name
+Service name: db_name
+Listener ORACLE_HOME [ /oragrid/product/11.2.0.3/grid ]:
+Password for SYS user:
+Password for SYSMAN user:
+----------------------------------------------------------------------
+WARNING : While repository is dropped the database will be put in quiesce mode.
+----------------------------------------------------------------------
+Do you wish to continue? [yes(Y)/no(N)]: Y
+May 22, 2013 4:40:10 PM oracle.sysman.emcp.EMConfig perform
+INFO: This operation is being logged at /oracle/cfgtoollogs/emca/db_name/emca_2013_05_22_16_39_36.log.
+May 22, 2013 4:40:12 PM oracle.sysman.emcp.util.DBControlUtil stopOMS
+INFO: Stopping Database Control (this may take a while) ...
+May 22, 2013 4:40:58 PM oracle.sysman.emcp.EMReposConfig invoke
+INFO: Dropping the EM repository (this may take a while) ...
+May 22, 2013 4:44:03 PM oracle.sysman.emcp.EMReposConfig invoke
+INFO: Repository successfully dropped
+Enterprise Manager configuration completed successfully
+FINISHED EMCA at May 22, 2013 4:44:06 PM
+</code></pre>
+                    <p>INSTALLATION :</p>
+
+                    <pre class="wp-block-code" id="RAREM"><code>
+[oracle@orclprd1 ~]$ emca -config dbcontrol db -repos create -cluster
+
+STARTED EMCA at Aug 14, 2013 12:53:04 PM
+EM Configuration Assistant, Version 11.2.0.3.0 Production
+Copyright (c) 2003, 2011, Oracle.  All rights reserved.
+
+Enter the following information:
+Database unique name: db_name
+Service name: db_name
+Listener port number: 3000
+Listener ORACLE_HOME [ /oragrid/product/11.2.0.3/grid ]: 
+Password for SYS user:  
+Password for DBSNMP user:  
+Password for SYSMAN user:  
+Password for SYSMAN user: Cluster name: db_name
+Email address for notifications (optional): 
+Outgoing Mail (SMTP) server for notifications (optional): postaci.company.com
+ASM ORACLE_HOME [ /oragrid/product/11.2.0.3/grid ]: 
+ASM port [ 3000 ]: 
+ASM username [ ASMSNMP ]: 
+ASM user password:    -------> "   type    "
+-----------------------------------------------------------------
+
+You have specified the following settings
+
+Database ORACLE_HOME ................ /oracle/product/11.2.0.3/db
+
+Database instance hostname ................ Listener ORACLE_HOME ................ /oragrid/product/11.2.0.3/grid
+Listener port number ................ 3000
+Cluster name ................ db_name
+Database unique name ................ db_name
+Email address for notifications ............... 
+Outgoing Mail (SMTP) server for notifications ............... postaci.company.com
+ASM ORACLE_HOME ................ /oragrid/product/11.2.0.3/grid
+ASM port ................ 3000
+ASM user role ................ SYSDBA
+ASM username ................ ASMSNMP
+
+-----------------------------------------------------------------
+Do you wish to continue? [yes(Y)/no(N)]: Y
+Aug 14, 2013 12:56:56 PM oracle.sysman.emcp.EMConfig perform
+INFO: This operation is being logged at /oracle/cfgtoollogs/emca/db_name/emca_2013_08_14_12_53_03.log.
+Aug 14, 2013 12:56:59 PM oracle.sysman.emcp.EMReposConfig createRepository
+INFO: Creating the EM repository (this may take a while) ...
+Aug 14, 2013 1:16:29 PM oracle.sysman.emcp.EMReposConfig invoke
+INFO: Repository successfully created
+Aug 14, 2013 1:16:33 PM oracle.sysman.emcp.EMReposConfig uploadConfigDataToRepository
+INFO: Uploading configuration data to EM repository (this may take a while) ...
+Aug 14, 2013 1:17:16 PM oracle.sysman.emcp.EMReposConfig invoke
+INFO: Uploaded configuration data successfully
+Aug 14, 2013 1:17:17 PM oracle.sysman.emcp.EMDBCConfig instantiateOC4JConfigFiles
+INFO: Propagating /oracle/product/11.2.0.3/db/oc4j/j2ee/OC4J_DBConsole_orclprd1_db_name to remote nodes ...
+Aug 14, 2013 1:17:19 PM oracle.sysman.emcp.EMDBCConfig instantiateOC4JConfigFiles
+INFO: Propagating /oracle/product/11.2.0.3/db/oc4j/j2ee/OC4J_DBConsole_orclprd2_db_name to remote nodes ...
+Aug 14, 2013 1:17:24 PM oracle.sysman.emcp.EMAgentConfig deployStateDirs
+INFO: Propagating /oracle/product/11.2.0.3/db/orclprd1_db_name to remote nodes ...
+Aug 14, 2013 1:17:27 PM oracle.sysman.emcp.EMAgentConfig deployStateDirs
+INFO: Propagating /oracle/product/11.2.0.3/db/orclprd2_db_name to remote nodes ...
+Aug 14, 2013 1:17:31 PM oracle.sysman.emcp.util.DBControlUtil secureDBConsole
+INFO: Securing Database Control (this may take a while) ...
+Aug 14, 2013 1:17:48 PM oracle.sysman.emcp.util.DBControlUtil startOMS
+INFO: Starting Database Control (this may take a while) ...
+Aug 14, 2013 1:18:25 PM oracle.sysman.emcp.EMDBPostConfig performConfiguration
+INFO: Database Control started successfully
+Aug 14, 2013 1:18:25 PM oracle.sysman.emcp.EMDBPostConfig performConfiguration
+INFO: >>>>>>>>>>> The Database Control URL is https://orclprd1.company.com:1158/em <<<<<<<<<<<
+Aug 14, 2013 1:18:27 PM oracle.sysman.emcp.EMDBPostConfig showClusterDBCAgentMessage
+INFO: 
+****************  Current Configuration  ****************
+                        INSTANCE            NODE           DBCONTROL_UPLOAD_HOST
+----------        ----------        ---------------------
+
+db_name           orclprd1           orclprd1.company.com
+db_name           orclprd2           orclprd1.company.com
+
+
+Aug 14, 2013 1:18:27 PM oracle.sysman.emcp.EMDBPostConfig invoke
+WARNING: 
+************************  WARNING  ************************
+
+Management Repository has been placed in secure mode wherein Enterprise Manager data will be encrypted.  The encryption key has been placed in the file: /oracle/product/11.2.0.3/db/orclprd1_db_name/sysman/config/emkey.ora. Ensure this file is backed up as the encrypted data will become unusable if this file is lost. 
+
+***********************************************************
+Enterprise Manager configuration completed successfully
+FINISHED EMCA at Aug 14, 2013 1:18:27 PM
+                    </code></pre>
+
+
+                    <hr />
+                    <p>&nbsp;</p>
+
+
+                    <div class="pagination flex-row " id="Pages ">
+                        <a href="index-2.html"><i class="fas fa-chevron-left "></i></a>
+                        <a href="index.html" class="pages ">1</a>
+                        <a href="index-2.html" class="pages ">2</a>
+                        <a href="#" class="pages ">3</a>
+                        <a href="index.html"><i class="fas fa-chevron-right "></i></a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+
+        <!-- -----------x---------- Site Content -------------x------------>
+    </main>
+
+    <!---------------x------------- Main Site Section ---------------x-------------->
+
+    <!-- --------------------------- Footer ---------------------------------------- -->
+
+    <footer class="footer">
+        <div class="container">
+            <div class="about-us" data-aos="fade-right" data-aos-delay="200">
+                <h2>Sentinity</h2>
+                <p>.</p>
+            </div>
+
+            <div class="follow" data-aos="fade-left" data-aos-delay="200">
+                <h2>Follow us</h2>
+                <p>Let us be Social</p>
+                <div>
+                    <i class="fab fa-facebook-f"></i>
+                    <i class="fab fa-twitter"></i>
+                    <i class="fab fa-instagram"></i>
+                </div>
+            </div>
+        </div>
+        <div class="rights flex-row">
+            <h4 class="text-gray">
+                Copyright ©2021 All rights reserved | made by Sentinity
+            </h4>
+        </div>
+        <div class="move-up">
+            <span><i class="fas fa-arrow-circle-up fa-2x"></i></span>
+        </div>
+    </footer>
+
+
+    <!-- -------------x------------- Footer --------------------x------------------- -->
+
+    <!-- Jquery Library file -->
+    <script src="../../js/Jquery3.4.1.min.js "></script>
+
+    <!-- --------- Owl-Carousel js ------------------->
+    <script src="../../js/owl.carousel.min.js "></script>
+
+    <!-- ------------ AOS js Library  ------------------------- -->
+    <script src="../../js/aos.js "></script>
+
+    <!-- Custom Javascript file -->
+    <script src="../../js/main.js "></script>
+</body>
+
+</html>

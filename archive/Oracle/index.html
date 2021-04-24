@@ -176,7 +176,9 @@ end loop; end;
 
                     <pre class="wp-block-code" id="HTCASTRASO"><code>
 SQL> BEGIN DBMS_SCHEDULER.CREATE_JOB ( job_name => '"SYS "."RECOMPILE_INVALID "', job_type => 'PLSQL_BLOCK', job_action => 
-'begin dbms_utility.compile_schema(''SCHEMA1'',FALSE,TRUE); dbms_utility.compile_schema(''SCHEMA2'',FALSE,TRUE); dbms_utility.compile_schema(''SCHEMA3'',FALSE,TRUE); ......... end; ', number_of_arguments => 0,
+'begin dbms_utility.compile_schema(''SCHEMA1'',FALSE,TRUE); 
+dbms_utility.compile_schema(''SCHEMA2'',FALSE,TRUE); 
+dbms_utility.compile_schema(''SCHEMA3'',FALSE,TRUE); ......... end; ', number_of_arguments => 0,
  start_date => TO_TIMESTAMP_TZ('2014-12-30 20:00:05.000000000 EUROPE/ISTANBUL','YYYY-MM-DD HH24:MI:SS.FF TZR'),
  repeat_interval => 'FREQ=HOURLY;BYDAY=MON,TUE,WED,THU,FRI,SAT,SUN',
  end_date => NULL,
@@ -226,12 +228,12 @@ SQL> DELETE FROM SCHEMA_NAME.TABLE_NAME
                     <p>· Enable Force Logging. --> OK</p>
                     <p>· Modify init Parameters.</p>
                     <pre class="wp-block-code" id="SUPSFARB "><code>
-DB_NAME=optimus
-DB_UNIQUE_NAME=optimus
-*LOG_ARCHIVE_CONFIG='DG_CONFIG=(optimus,prime,testdb)'
- alter system set LOG_ARCHIVE_CONFIG='DG_CONFIG=(optimus,prime,testdb)' scope=both sid='*';
- LOG_ARCHIVE_DEST_1='LOCATION=+FRA VALID_FOR=(ALL_LOGFILES,ALL_ROLES) DB_UNIQUE_NAME=optimus'
- LOG_ARCHIVE_DEST_2='SERVICE=prime SYNC AFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=prime VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'
+DB_NAME=mydbinstance
+DB_UNIQUE_NAME=mydbinstance
+*LOG_ARCHIVE_CONFIG='DG_CONFIG=(mydbinstance,anotherdbinstance,testdb)'
+ alter system set LOG_ARCHIVE_CONFIG='DG_CONFIG=(mydbinstance,anotherdbinstance,testdb)' scope=both sid='*';
+ LOG_ARCHIVE_DEST_1='LOCATION=+FRA VALID_FOR=(ALL_LOGFILES,ALL_ROLES) DB_UNIQUE_NAME=mydbinstance'
+ LOG_ARCHIVE_DEST_2='SERVICE=anotherdbinstance SYNC AFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=anotherdbinstance VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'
  *LOG_ARCHIVE_DEST_3='SERVICE=testdb SYNC AFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=testdb VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)'
  alter system set LOG_ARCHIVE_DEST_3='SERVICE=testdb SYNC AFFIRM NET_TIMEOUT=30 REOPEN=300 DB_UNIQUE_NAME=testdb VALID_FOR=(ALL_LOGFILES,PRIMARY_ROLE)' scope=both sid='*';
  LOG_ARCHIVE_DEST_STATE_1=enable
@@ -241,8 +243,8 @@ DB_UNIQUE_NAME=optimus
  LOG_ARCHIVE_FORMAT=%t_%s_%r.arc
  LOG_ARCHIVE_MAX_PROCESSES=4
  FAL_SERVER=prim
- *DB_FILE_NAME_CONVERT='testdb', 'optimus', '+DATA', '+DATASSD', '+DATA', '+DATASAS' 
- *LOG_FILE_NAME_CONVERT= 'testdb', 'optimus', '+DATA', '+DATASSD', '+DATA', '+DATASAS' 
+ *DB_FILE_NAME_CONVERT='testdb', 'mydbinstance', '+DATA', '+DATASSD', '+DATA', '+DATASAS' 
+ *LOG_FILE_NAME_CONVERT= 'testdb', 'mydbinstance', '+DATA', '+DATASSD', '+DATA', '+DATASAS' 
  STANDBY_FILE_MANAGEMENT=AUTO
 
  · Enable Archivelog Mode. 
@@ -256,14 +258,14 @@ DB_UNIQUE_NAME=optimus
  ASMCMD> mkdir +RECO/TESTDB/STANDBYLOG 
 
  alter system set standby_file_management=manual scope=both sid='*'; 
- alter database add standby logfile thread 1 group 71 '+DATASSD/optimus/standbylog/standby_group_71.log' size 1G; --Size may vary
- alter database add standby logfile thread 1 group 72 '+DATASSD/optimus/standbylog/standby_group_72.log' size 1G;
- alter database add standby logfile thread 1 group 73 '+DATASSD/optimus/standbylog/standby_group_73.log' size 1G;
- alter database add standby logfile thread 1 group 74 '+DATASSD/optimus/standbylog/standby_group_74.log' size 1G;
- alter database add standby logfile thread 2 group 81 '+DATASSD/optimus/standbylog/standby_group_81.log' size 1G;
- alter database add standby logfile thread 2 group 82 '+DATASSD/optimus/standbylog/standby_group_82.log' size 1G;
- alter database add standby logfile thread 2 group 83 '+DATASSD/optimus/standbylog/standby_group_83.log' size 1G;
- alter database add standby logfile thread 2 group 84 '+DATASSD/optimus/standbylog/standby_group_84.log' size 1G;
+ alter database add standby logfile thread 1 group 71 '+DATASSD/mydbinstance/standbylog/standby_group_71.log' size 1G; --Size may vary
+ alter database add standby logfile thread 1 group 72 '+DATASSD/mydbinstance/standbylog/standby_group_72.log' size 1G;
+ alter database add standby logfile thread 1 group 73 '+DATASSD/mydbinstance/standbylog/standby_group_73.log' size 1G;
+ alter database add standby logfile thread 1 group 74 '+DATASSD/mydbinstance/standbylog/standby_group_74.log' size 1G;
+ alter database add standby logfile thread 2 group 81 '+DATASSD/mydbinstance/standbylog/standby_group_81.log' size 1G;
+ alter database add standby logfile thread 2 group 82 '+DATASSD/mydbinstance/standbylog/standby_group_82.log' size 1G;
+ alter database add standby logfile thread 2 group 83 '+DATASSD/mydbinstance/standbylog/standby_group_83.log' size 1G;
+ alter database add standby logfile thread 2 group 84 '+DATASSD/mydbinstance/standbylog/standby_group_84.log' size 1G;
  alter system set standby_file_management=auto scope=both sid='*'; 
 
  Adjust the destination log files accordingly 
