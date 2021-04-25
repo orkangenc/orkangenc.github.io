@@ -113,104 +113,48 @@
             <div class="site-content">
                 <div class="post-body">
                     <h2>This page contains solutions/answers to some typical Oracle DBA queries. We will enhance the content in time. Please note the content is for 11gR2.</h2>
-                    <u><h3><a href="#DDLDDDLG">Script to generate a duplicate copy of an instance</a></h3></u>
+                    <u><h3><a href="#CLPFAOD">Changing listener port for an Oracle database</a></h3></u>
 
-                    <p>Please note that you need to modify the script according to your ASM settings and other relevant configurations.</p>
-                    <pre class="wp-block-code" id="DDLDDDLG"><code>
-export NLS_LANG=american_america.al32utf8
-export NLS_DATE_FORMAT='Mon DD YYYY HH24:MI:SS'
-export PATH=/oracle/product/11.2.0.3/db/bin:$PATH
-export ORACLE_UNQNAME=targetinst
+                    <p>This exampel sets the port to 3000</p>
+                    <pre class="wp-block-code" id="CLPFAOD"><code>
+$ srvctl stop listener
+$ srvctl modify listener -l LISTENER -p "TCP:3000"
+$ srvctl config listener
+Name: LISTENER
+Network: 1, Owner: oracle
+Home: &lt;CRS home&gt;
+End points: TCP:3000
 
-export ORACLE_HOME=/oragrid/product/11.2.0.3/grid
-export ORACLE_SID=+ASM2
-export PATH=/oragrid/product/11.2.0.3/grid/bin:$PATH
-asmcmd rm +DATAT1/DSS/ARCHIVELOG/*/*
-###asmcmd rm +DATAT1/DSS/CONTROLFILE/*
-asmcmd rm +DATAT1/DSS/DATAFILE/*
-asmcmd rm +DATAT1/DSS/ONLINELOG/*
-asmcmd rm +DATAT1/DSS/TEMPFILE/*
-asmcmd rm +DATAT1/DSS/FLASHBACK/*
-lsnrctl start LISTENER_DSS
-export ORACLE_HOME=/oracle/product/11.2.0.3/db
-export ORACLE_SID=targetinst
-export ORACLE_UNQNAME=targetinst
-sqlplus / as sysdba &lt;&lt;eof
-startup nomount;
-eof
-rman &lt;&lt;EOF
-connect target sys/****@dbname2
-connect auxiliary sys/****@targetinst
-run {
-allocate channel prm1 type disk;
-allocate channel prm2 type disk;
-allocate channel prm3 type disk;
-allocate channel prm4 type disk;
-allocate channel prm5 type disk;
-allocate channel prm6 type disk;
-allocate channel prm7 type disk;
-allocate channel prm8 type disk;
-allocate auxiliary channel ds1 type disk;
-allocate auxiliary channel ds2 type disk;
-allocate auxiliary channel ds3 type disk;
-allocate auxiliary channel ds4 type disk;
-allocate auxiliary channel ds5 type disk;
-allocate auxiliary channel ds6 type disk;
-allocate auxiliary channel ds7 type disk;
-allocate auxiliary channel ds8 type disk;
-duplicate target database to targetinst from active database;
-release channel prm1;
-release channel prm2;
-release channel prm3;
-release channel prm4;
-release channel prm5;
-release channel prm6;
-release channel prm7;
-release channel prm8;
-}
-exit
-EOF
-RC=$?
-ms=""
-if [ $RC -ne "0" ]; then
-ms="DSS Active Duplicate <b><font color=\"red\"> FAILED</font></b>"
-else
-  ms="DSS Active Duplicate SUCCESS"
-fi
-RDBMSUSERPROFILE=/home/oracle/.profile.dbname2
-. $RDBMSUSERPROFILE
-sqlplus / as sysdba << EOF
-exec SYS.UTL_MAIL.SEND('address@company.com','another@company.com' ,NULL,NULL,'Duplication Task Status','$ms','text/html; charset=us-ascii',NULL)
-EOF
+$ srvctl stop scan_listener
+$ srvctl modify scan_listener -p 3000
+$ srvctl modify listener -l LISTENER_SCAN1 -p "TCP:3000"
+$ srvctl start listener
+$ srvctl start scan_listener
+</code></pre>
+                    <p>Do the same for all instances</p>
 
+                    <pre class="wp-block-code" id=""><code>
+SQL> alter system set local_listener='(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=172.30.33.51)(PORT=3000))))' scope=both sid = 'instance1';
+SQL> alter system set remote_listener='instance-scan.company.com:3000' scope=both;
+
+SQL> alter system set local_listener='(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=172.30.33.52)(PORT=3000))))' scope=both sid = 'instance2';
+SQL> alter system set remote_listener='instance-scan.company.com:3000' scope=both;
+
+$ srvctl stop database -d instance 
+$srvctl start database -d instance 
                     </code></pre>
-
-
+                    <p>Update the new port in tnsnames.ora for all instances</p>
                     <hr />
                     <p>&nbsp;</p>
-                    <u><h3><a href="#AANNTR">Adding a new node to RAC</a></h3></u>
-
-                    <p>Please switch to grid user. instances: rac11g2s1/2 nodes: rac4/5b</p>
-                    <pre class="wp-block-code" id="AANNTR"><code>
-
-$GRID_HOME/bin/srvctl add database -d rac11g2s -o $ORACLE_HOME -m local -p "+DATA/rac11g2s/spfilerac11g2s.ora" -n rac11g2 -r physical_standby -s mount
-
-or 
-
-$GRID_HOME/bin/srvctl add database -d rac11g2s -o $ORACLE_HOME -p "+DATASSD/some_path/PARAMETERFILE/spfile.297.821638883"
-
-$GRID_HOME/bin/srvctl add instance -d rac11g2s -i rac11g2s1 -n rac4b
-$GRID_HOME/bin/srvctl add instance -d rac11g2s -i rac11g2s2 -n rac5b
-</code></pre>
 
 
                     <div class="pagination flex-row " id="Pages ">
-                        <a href="index.html"><i class="fas fa-chevron-left "></i></a>
+                        <a href="index-3.html"><i class="fas fa-chevron-left "></i></a>
                         <a href="index.html" class="pages ">1</a>
-                        <a href="#" class="pages ">2</a>
+                        <a href="index-2.html" class="pages ">2</a>
                         <a href="index-3.html" class="pages ">3</a>
-                        <a href="index-4.html" class="pages ">4</a>
-                        <a href="index-3.html"><i class="fas fa-chevron-right "></i></a>
+                        <a href="#" class="pages ">4</a>
+                        <a href="index.html"><i class="fas fa-chevron-right "></i></a>
                     </div>
 
                 </div>
